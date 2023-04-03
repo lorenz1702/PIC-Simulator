@@ -20,6 +20,38 @@ Scanner Klasse.
 
 \subsection{Funktionen implementieren}
 Alle Funktionen aus dem Bewertungsbogen implementieren andlw usw. 
-Engine-Klasse.
+Engine-Klasse.\\
+if(befehl \&\& 0x3F00)==0x3000$\longrightarrow$ MOVLW\\
+if(befehl \&\& 0x3F00)==0x3E00$\longrightarrow$ ADDLW\\
+if(befehl \&\& 0x3F00)==0x0700$\Longrightarrow$ ADDWF\\
+if(befehl \&\& 0x3F00)==0X3900$\Longrightarrow$ ANDLW\\
+MOVLW;\\
+Ergebnis = Befehl \&\&  0x00FF\\
+W-Reg = Ergebnis\\
+
+ADDLW;\\
+Ergebnis = Befehl \&\& 0x00FF\\
+Ergebnis = Ergebnis + WReg\\
+if Ergebnis == 0 $\longrightarrow$ Z-Flag setzen\\
+else $\longrightarrow$ Z-Flag zurücksetzen\\
+if Ergebnis$>$ 255 $\longrightarrow$ Set Carry\\
+else $\longrightarrow$ Rest \\
+
+ADDWF;\\
+FReg = Befehl \&\& 0x007F\\
+DBit = Befehl \&\& 0x0080\\
+if FReg == 0 $\Longrightarrow$ FReg = FSR (indirekte Addressierung)\\
+Erg = W-Reg + Datenspeicher[FReg]\\
+if D-Bit == 0 $\longrightarrow$ WReg = Erg\\
+else Datenspeicher[FReg] = Erg(FReg ist ein REgister welches selbst definert werden kann)\\ 
+
+ANDLW;\\
+
+
+
+Temp1 = Befehl \&\& 0x000F\\
+Temp1 = Temp1 + (WReg \&\& 0x0F)
+if Temp1 $>$ 15 $\longrightarrow$ SetDC\\
+else $\Longrightarrow$ RestDC
 
 \subsection{Addressmachinen}
