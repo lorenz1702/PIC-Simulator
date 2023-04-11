@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    "iostream": "cpp",
+    "new": "cpp"
+  },
+  "makefile.configurations": [
+    {
+      "name": "Default",
+      "makeArgs": []
+    }
+  ]
+}
