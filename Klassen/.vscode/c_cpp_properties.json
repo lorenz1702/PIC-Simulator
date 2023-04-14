@@ -2,18 +2,20 @@
     "configurations": [
         {
             "name": "Win32",
-            "intelliSenseMode": "windows-gcc-x86",
-            "cStandard": "c11",
-            "cppStandard": "c++17",
-            "compilerPath": "C:/mingw32/bin/gcc.exe",
             "includePath": [
-                "${workspaceFolder}/src",
-                "${workspaceFolder}/lib",
-                "${workspaceFolder}/test",
-                "C:/SFML-2.5.1/include"
+                "${workspaceFolder}/**",
+                "C:\\VSC Programmieren\\C++\\Zweites Semester\\ProgrammierenAufgabe\\src\\include"
             ],
-            "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
-            "forcedInclude": ["${workspaceFolder}/src/PCH.hpp"]
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerPath": "C:/mingw64 SFML/bin/g++.exe",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
