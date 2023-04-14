@@ -2,20 +2,18 @@
     "configurations": [
         {
             "name": "Win32",
+            "intelliSenseMode": "windows-gcc-x86",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "compilerPath": "C:/mingw32/bin/gcc.exe",
             "includePath": [
-                "${workspaceFolder}/**",
-                "C:\\Users\\loren\\DHBW_Karlsruhe\\4. Semester\\Systemnahe Programmierung 2\\PIC-Simulator\\Klassen\\src\\include"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/lib",
+                "${workspaceFolder}/test",
+                "C:/SFML-2.5.1/include"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "cStandard": "gnu17",
-            "cppStandard": "gnu++17",
-            "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "C:/MinGW/bin/g++.exe",
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
+            "forcedInclude": ["${workspaceFolder}/src/PCH.hpp"]
         }
     ],
     "version": 4
