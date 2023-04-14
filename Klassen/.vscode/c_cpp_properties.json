@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\VSC Programmieren\\C++\\Zweites Semester\\ProgrammierenAufgabe\\src\\include"
+                "C:\\Users\\loren\\DHBW_Karlsruhe\\4. Semester\\Systemnahe Programmierung 2\\PIC-Simulator\\Klassen\\src\\include"
             ],
             "defines": [
                 "_DEBUG",
@@ -14,7 +14,7 @@
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "C:/mingw64 SFML/bin/g++.exe",
+            "compilerPath": "C:/MinGW/bin/g++.exe",
             "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],

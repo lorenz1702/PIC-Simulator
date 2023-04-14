@@ -3,7 +3,7 @@
     {
       "type": "cppbuild",
       "label": "C/C++: g++.exe Aktive Datei kompilieren",
-      "command": "C:/mingw64 SFML/bin/g++.exe",
+      "command": "C:/MinGW/bin/g++.exe",
       "args": [
         "-fdiagnostics-color=always",
         "-g",
@@ -13,7 +13,7 @@
         "-mwindows"
       ],
       "options": {
-        "cwd": "C:/mingw64 SFML/bin"
+        "cwd": "C:/MinGW/bin/bin"
       },
       "problemMatcher": ["$gcc"],
       "group": {
