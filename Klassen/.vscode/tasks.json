@@ -13,7 +13,7 @@
         "-mwindows"
       ],
       "options": {
-        "cwd": "C:/MinGW/bin/bin"
+        "cwd": "C:/mingw32/bin/bin"
       },
       "problemMatcher": ["$gcc"],
       "group": {
