@@ -1,4 +1,4 @@
-all: compile link main remove
+all: compile link main
 
 compile:
 	g++ -I src/include -c main.cpp -o main.o
