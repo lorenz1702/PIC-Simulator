@@ -8,5 +8,6 @@
       "name": "Default",
       "makeArgs": []
     }
-  ]
+  ],
+  "C_Cpp.default.compilerPath": "C:/MinGW/bin/g++.exe"
 }

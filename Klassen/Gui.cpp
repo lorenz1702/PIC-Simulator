@@ -11,6 +11,7 @@
 Gui::Gui()
 {
     gui = new sf::Window(sf::VideoMode::getDesktopMode(), "PIC-Simulator", sf::Style::Fullscreen);
+    
     gui->setFramerateLimit(60);
 
 }
