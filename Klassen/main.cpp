@@ -19,7 +19,18 @@ int main()
     Scanner scanner;
 
     Engine engine;
-    printf("hallowelt");
+    printf("hallowelt\n");
+    engine.programmemory[1]=0;
+    for (int i = 0; i < 10; i++) {
+        //std::cout << "myArray[" << i << "] = " << (engine.programmemory[i]&0x3fff) << std::endl;
 
+        printf("Wert Array%i\n",engine.programmemory[i]);
+
+    }
     scanner.putcommandsinprogrammemory(engine);
+
+    for (int i = 0; i < 10; i++) {
+        //std::cout << "myArray[" << i << "] = " << (engine.programmemory[i]&0x3fff) << std::endl;
+        printf("Wert Array%i\n",engine.programmemory[i]);
+    }
 }
