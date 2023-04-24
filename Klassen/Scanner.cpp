@@ -10,7 +10,7 @@ Scanner::~Scanner()
 {
 }
 
-int Scanner::putcommandsinprogrammemory(Engine engine)
+int Scanner::putcommandsinprogrammemory(Engine &engine)
 {
     
     //FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.txt", "r");

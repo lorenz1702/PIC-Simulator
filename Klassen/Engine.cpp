@@ -2,8 +2,9 @@
 
 Engine::Engine()
 {
-    
-    this->programmemory[0]=0;
+    for(int i = 0; i < 1024; i++){
+    this->programmemory[i] = 0;
+    }
 }
 
 Engine::~Engine()

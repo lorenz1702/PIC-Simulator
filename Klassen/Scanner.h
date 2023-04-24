@@ -28,7 +28,7 @@ class Scanner
     Scanner();
     ~Scanner();
 
-    int putcommandsinprogrammemory(Engine engine);
+    int putcommandsinprogrammemory(Engine &engine);
 
 
 } ;
