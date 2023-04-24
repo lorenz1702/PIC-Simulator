@@ -1,4 +1,39 @@
 #include "Scanner.h"
+#include "Engine.h"
+
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <stdlib.h>
+#include <windows.h>
+
+using namespace std;
+
+Scanner::Scanner()
+{
+}
+
+Scanner::~Scanner()
+{
+}
+
+int Scanner::putcommandsinprogrammemory(Engine engine)
+{
+    
+    FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.LST", "r");
+    int fscan_return = 0;
+    int buffer_programmemory [2];
+    int counter = 0;
+    
+    while(fscanf(inputFile, "%4X %4X" ,&buffer_programmemory[0],&buffer_programmemory[1]) != EOF){
+        printf("\n%4X,%4X\n",buffer_programmemory[0],buffer_programmemory[1]);
+        engine.programmemory[counter][0] = buffer_programmemory[0];
+        engine.programmemory[counter][1] = buffer_programmemory[1];
+        //printf("Im Programmspeicher steht an der %x der Wert %x",engine.programmemory[i][0],engine.programmemory[i][1]);
+        counter++;
+    }
+    return 0;
+}
 
 /*
     Commands needed:
@@ -34,12 +69,19 @@
 
 */
 
-void Scanner::executeCommand(int pcommand)
+void Scanner::executeCommand(int pcommand) //pcommand: for example 3011 -> second part of command
 {
-    switch (pcommand and 0x3F00)
+    //int test = 3011;
+    string s = to_string(pcommand);       // temporary string for appending "0x"
+    s.insert (0, "0x");
+    int a = stoi(s) & 0x3FF0;
+    std::cout << stoi(s) << "\n";
+
+    /*switch (pNewcommand)
     {
         case 0x3000:
         //MOVLW
+        printf("hier");
         case 0x0700:
         //ADDLW
         case 60:
@@ -62,9 +104,11 @@ void Scanner::executeCommand(int pcommand)
         //RLF
         case 12:
         //RRF
-        case 20 ... 23:
+        //case 20 ... 23:
         //BSF
-        case 
+        //case 
+        default:
+        ;
     }
-
+*/
 }

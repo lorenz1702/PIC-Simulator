@@ -1,4 +1,6 @@
 #include "Gui.h"
+#include "Scanner.h"
+#include "Engine.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -6,35 +8,22 @@
 #include <stdlib.h>
 #include <windows.h>
 
+using namespace std;
 //Programm starten:
 //-> Im Terminal beim Pfad dieses Ordners "Klassen" mingw32-make eingeben
 
 int main()
 {
-    // create the window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+    //Gui Gui;
 
-    // run the program as long as the window is open
-    while (window.isOpen())
-    {
-        // check all the window's events that were triggered since the last iteration of the loop
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // "close requested" event: we close the window
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
+    Scanner scanner;
 
-        // clear the window with black color
-        window.clear(sf::Color::Black);
+    Engine engine;
+    
+    printf("hallowelt");
 
-        // draw everything here...
-         window.draw();
+    //scanner.putcommandsinprogrammemory(engine);
+    
 
-        // end the current frame
-        window.display();
-    }
-
-    return 0;
+    scanner.executeCommand(3011);
 }
