@@ -17,7 +17,7 @@ class Engine
     public:
     Engine();
     ~Engine();
-    int programmemory[1024][2]; //oberen 2 Bits sind immer 0, ggf. verunden
+    int programmemory[1024]; //oberen 2 Bits sind immer 0, ggf. verunden
 
 
 } ;

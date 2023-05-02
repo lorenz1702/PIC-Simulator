@@ -6,6 +6,10 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
 
 #include "Engine.h"
 
@@ -21,8 +25,8 @@ class Scanner               //Ziffernstruktur: 0001 3011  0001-> Adresse, -> 30 
     Scanner();
     ~Scanner();
 
-    int putcommandsinprogrammemory(Engine engine);
-    void executeCommand(int pcommand);
+    int putcommandsinprogrammemory(Engine &engine);
+    void executeCommand(std::string pcommand);
 
 } ;
 

@@ -19,11 +19,16 @@ int main()
     Scanner scanner;
 
     Engine engine;
-    
-    printf("hallowelt");
 
     //scanner.putcommandsinprogrammemory(engine);
-    
-
-    scanner.executeCommand(3011);
+    /*
+    for (int i = 0; i < 10; i++) 
+    {
+        //std::cout << "myArray[" << i << "] = " << (engine.programmemory[i]&0x3fff) << std::endl;
+        printf("Wert Programmemory an der Stelle %i: %i\n",i ,engine.programmemory[i]);
+    }
+    */
+    std::string test;
+    test = "3011";
+    scanner.executeCommand(test);
 }

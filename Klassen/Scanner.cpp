@@ -17,21 +17,60 @@ Scanner::~Scanner()
 {
 }
 
-int Scanner::putcommandsinprogrammemory(Engine engine)
+int Scanner::putcommandsinprogrammemory(Engine &engine)
 {
     
-    FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.LST", "r");
-    int fscan_return = 0;
-    int buffer_programmemory [2];
-    int counter = 0;
-    
-    while(fscanf(inputFile, "%4X %4X" ,&buffer_programmemory[0],&buffer_programmemory[1]) != EOF){
-        printf("\n%4X,%4X\n",buffer_programmemory[0],buffer_programmemory[1]);
-        engine.programmemory[counter][0] = buffer_programmemory[0];
-        engine.programmemory[counter][1] = buffer_programmemory[1];
-        //printf("Im Programmspeicher steht an der %x der Wert %x",engine.programmemory[i][0],engine.programmemory[i][1]);
-        counter++;
+    //FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.txt", "r");
+    //std::ifstream inputFile("TestProg_PicSim/TPicSim1.txt");
+    std::ifstream file("TestProg_PicSim/TPicSim1.LST");
+    if (!file.is_open()) 
+    {
+        std::cout << "Could not open file " << "TestProg_PicSim/TPicSim1.LST" << std::endl;
+        return 1;
     }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        // Ignore lines before line 18
+        if (line.find("                    ") == 0){
+            printf("line not used: %s\n",line);
+            continue;
+        }
+
+        // Get the index and value from the line
+        printf("line: %s\n",line);
+
+        std::string indexStr = line.substr(0, 4);
+        std::string valueStr = line.substr(5, 4);
+        
+        printf("indexStr: %s\n",indexStr);
+        printf("value: %s\n",valueStr);
+
+        std::cout << indexStr << std::endl;
+        std::cout << valueStr << std::endl;
+
+        // Convert index and value to integer
+        
+        
+        try {
+            int index = std::stoi(indexStr);
+            printf("index convert: %i\n",index);
+            int value = std::stol(valueStr, nullptr, 16);
+            printf("value convert: %i\n",value);
+
+
+            if (index >= 0 && index < 1024) {
+                engine.programmemory[index] = value;
+            } else {
+                std::cout << "Index out of range: " << index << std::endl;
+            }
+        } catch (std::exception& e) {
+            std::cout << "Error: " << e.what() << std::endl;
+        }
+        
+    }
+    file.close();
+
     return 0;
 }
 
@@ -69,13 +108,15 @@ int Scanner::putcommandsinprogrammemory(Engine engine)
 
 */
 
-void Scanner::executeCommand(int pcommand) //pcommand: for example 3011 -> second part of command
+void Scanner::executeCommand(std::string pcommand) //pcommand: for example 3011 -> second part of command
 {
     //int test = 3011;
-    string s = to_string(pcommand);       // temporary string for appending "0x"
-    s.insert (0, "0x");
-    int a = stoi(s) & 0x3FF0;
-    std::cout << stoi(s) << "\n";
+    //string s = to_string(pcommand);       // temporary string for appending "0x"
+    pcommand.insert (0, "0x");
+    std::cout << "pcommand:" + pcommand << "\n";
+    int a = std::stoi(pcommand,nullptr,0) & 0x3FF0;
+    string pnew = std::to_string(a);
+    std::cout << "pnew:" + pnew << "\n";
 
     /*switch (pNewcommand)
     {
