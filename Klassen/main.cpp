@@ -14,7 +14,7 @@ using namespace std;
 
 int main()
 {
-    //Gui Gui;
+    Gui Gui;
 
     Scanner scanner;
 
@@ -28,8 +28,5 @@ int main()
         printf("Wert Programmemory an der Stelle %i: %i\n",i ,engine.programmemory[i]);
     }
     
-    std::string test;
-    test = "3011";
-    scanner.executeCommand(test);
     */
 }

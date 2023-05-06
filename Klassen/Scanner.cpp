@@ -23,16 +23,19 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
     //FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.txt", "r");
     //ifstream inputFile("TestProg_PicSim/TPicSim1.txt");
     ifstream file("TestProg_PicSim/TPicSim1.LST");
-    if (!file.is_open()) 
+    
+    if (!file.is_open())                                        //error handling
     {
         cout << "Could not open file " << "TestProg_PicSim/TPicSim1.LST" << endl;
         return 1;
     }
 
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line)) 
+    {
         // Ignore lines before line 18
-        if (line.find("                    ") == 0){
+        if (line.find("                    ") == 0)
+        {
             //printf("line not used: %s\n",line);
             continue;
         }
@@ -42,8 +45,9 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
 
         string indexStr = line.substr(0, 4);
         string valueStr = line.substr(5, 4);
-        
+        //call execution Method
         executeCommand(valueStr);
+
         /*
         printf("indexStr: %s\n",indexStr);
         printf("value: %s\n",valueStr);
@@ -149,11 +153,11 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
 
 */
 
-void Scanner::executeCommand(string pcommand) //pcommand: for example 3011 -> second part of command
+void Scanner::executeCommand(string pcommand)   //pcommand: for example "3011" for MOVLW
 {
     
     cout << "pcommand:" << pcommand << endl;
-    int comm[4];
+    int comm[4];                                //split and convert to integers
     comm[0] = stoi(pcommand.substr(0,1), nullptr, 16);
     comm[1] = stoi(pcommand.substr(1,1), nullptr, 16);
     comm[2] = stoi(pcommand.substr(2,1), nullptr, 16);
@@ -164,6 +168,7 @@ void Scanner::executeCommand(string pcommand) //pcommand: for example 3011 -> se
     cout << "comm[2]:" << comm[2] << endl;
     cout << "comm[3]:" << comm[3] << endl;
     
+    //switch statement with all commands
     switch (comm[0])
     {
         case 0:
