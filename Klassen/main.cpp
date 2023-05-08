@@ -21,7 +21,7 @@ int main()
     Engine engine;
 
     scanner.putcommandsinprogrammemory(engine);
-    
+    /*
     for (int i = 0; i < 10; i++) 
     {
         //std::cout << "myArray[" << i << "] = " << (engine.programmemory[i]&0x3fff) << std::endl;
@@ -31,4 +31,5 @@ int main()
     std::string test;
     test = "3011";
     scanner.executeCommand(test);
+    */
 }
