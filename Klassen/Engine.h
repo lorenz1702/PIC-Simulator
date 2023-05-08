@@ -5,6 +5,9 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
+#include <string>
+
+using namespace std;
 
 #ifndef Engine_H_
 #define Engine_H_
@@ -17,9 +20,11 @@ class Engine
     public:
     Engine();
     ~Engine();
-    int programmemory[1024]; //oberen 2 Bits sind immer 0, ggf. verunden
+    string programmemory[1024]; //oberen 2 Bits sind immer 0, ggf. verunden
+
+    int executeCommand(string pcommand);
 
 
-} ;
+};
 
 #endif
