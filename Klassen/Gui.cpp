@@ -1,4 +1,6 @@
 #include "Gui.h"
+#include "DataStorage.h"
+#include "DataStorage.cpp"
 
 
 #include <stdio.h>
@@ -10,25 +12,34 @@
 
 Gui::Gui()
 {
-    gui = new sf::Window(sf::VideoMode::getDesktopMode(), "PIC-Simulator", sf::Style::Fullscreen);
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    sf::RenderWindow gui;
+    gui.create(sf::VideoMode::getDesktopMode(), "PIC-Simulator", sf::Style::Fullscreen);
 
-    while (window.isOpen())
+    DataStorage datastorage(gui.getSize().x, gui.getSize().y);
+    
+    //IOPins iopins;
+    //SpecialFunctionRegister specialfunctionregister;
+    //ControlPanel controlpanel;
+    //LSTData lstdata;
+
+    gui.setFramerateLimit(60);
+
+    while (gui.isOpen())
     {
+        // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
-        while (window.pollEvent(event))
+        while (gui.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
-                window.close();
+                gui.close();
         }
 
-        window.clear();
-        window.draw(shape);
-        window.display();
+        gui.clear();
+        gui.draw(datastorage.rectangle);
+        gui.display();
     }
-    gui->setFramerateLimit(60);
+    
+
 
 }
 
