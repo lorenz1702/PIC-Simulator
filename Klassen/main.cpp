@@ -14,7 +14,7 @@ using namespace std;
 
 int main()
 {
-    //Gui Gui;
+    Gui Gui;
 
     Scanner scanner;
 

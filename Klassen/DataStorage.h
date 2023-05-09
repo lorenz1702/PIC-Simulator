@@ -5,20 +5,21 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>
-#include "DataStorage.h"
 
-#ifndef GUI_H_
-#define GUI_H_
+#ifndef DATASTORAGE_H_
+#define DATASTORAGE_H_
 
-class Gui
+
+class DataStorage
 {
-    private:
-    sf::Window* gui;
 
     public:
-    Gui();
-    ~Gui();
+    sf::RectangleShape rectangle;
+    DataStorage(int length, int height);
+    ~DataStorage();
+    
 
-} ;
+};
+
 
 #endif
