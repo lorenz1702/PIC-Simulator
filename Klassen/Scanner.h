@@ -26,7 +26,6 @@ class Scanner               //Ziffernstruktur: 0001 3011  0001-> Adresse, -> 30 
     ~Scanner();
 
     int putcommandsinprogrammemory(Engine &engine);
-    void executeCommand(std::string pcommand);
 
 } ;
 

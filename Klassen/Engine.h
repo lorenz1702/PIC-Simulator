@@ -12,13 +12,12 @@
 class Engine
 {
     private:
-    
 
     public:
     Engine();
     ~Engine();
-    int programmemory[1024]; //oberen 2 Bits sind immer 0, ggf. verunden
-
+    std::string programmemory[1024]; //oberen 2 Bits sind immer 0, ggf. verunden
+    void executeCommand(std::string pcommand);
 
 } ;
 

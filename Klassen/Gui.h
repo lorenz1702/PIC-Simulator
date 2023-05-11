@@ -13,7 +13,7 @@ class Gui
 {
     private:
     sf::RenderWindow* window;
-    sf::RectangleShape* rectangle;
+    sf::RectangleShape* backgroundrect, *programbackgroundrect, *programmemoryrect, *registerrect;
 
     public:
     Gui();

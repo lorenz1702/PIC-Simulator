@@ -11,6 +11,7 @@ using namespace std;
 
 Scanner::Scanner()
 {
+    Engine engine;
 }
 
 Scanner::~Scanner()
@@ -46,7 +47,13 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
         string indexStr = line.substr(0, 4);
         string valueStr = line.substr(5, 4);
         //call execution Method
-        executeCommand(valueStr);
+        int index = stoi(indexStr);
+
+        if (index >= 0 && index < 1024) {
+                engine.programmemory[index] = valueStr;
+            } else {
+                cout << "Index out of range: " << index << endl;
+            } 
 
         /*
         printf("indexStr: %s\n",indexStr);
@@ -82,6 +89,8 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
     }
     return 0;
 }
+
+
 
 /*
     Commands needed:
@@ -152,211 +161,3 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
 
 
 */
-
-void Scanner::executeCommand(string pcommand)   //pcommand: for example "3011" for MOVLW
-{
-    
-    cout << "pcommand:" << pcommand << endl;
-    int comm[4];                                //split and convert to integers
-    comm[0] = stoi(pcommand.substr(0,1), nullptr, 16);
-    comm[1] = stoi(pcommand.substr(1,1), nullptr, 16);
-    comm[2] = stoi(pcommand.substr(2,1), nullptr, 16);
-    comm[3] = stoi(pcommand.substr(3,1), nullptr, 16);
-        
-    cout << "comm[0]:" << comm[0] << endl;
-    cout << "comm[1]:" << comm[1] << endl;
-    cout << "comm[2]:" << comm[2] << endl;
-    cout << "comm[3]:" << comm[3] << endl;
-    
-    //switch statement with all commands
-    switch (comm[0])
-    {
-        case 0:
-        cout << "Case 0" << endl;
-        switch(comm[1])
-        {
-            case 7:
-            //ADDWF
-            cout << "ADDWF" << endl;
-            break;
-            case 5:
-            //ANDWF
-            cout << "ANDWF" << endl;
-            break;
-            case 1:
-            switch(comm[2])
-            {
-                case 8 ... 0xF:
-                //CLRF
-                cout << "CLRF" << endl;
-                break;
-                case 0:
-                //CLRW
-                cout << "CLRW" << endl;
-                break;
-            }
-            case 9:
-            //COMF
-            cout << "COMF" << endl;
-            break;
-            case 3:
-            //DECF
-            cout << "DECF" << endl;
-            break;
-            case 0xB:
-            //DECFSZ
-            cout << "DECFSZ" << endl;
-            break;
-            case 0xA:
-            //INCF
-            cout << "INCF" << endl;
-            break;
-            case 0xF:
-            //INCFSZ
-            cout << "INCFSZ" << endl;
-            break;
-            case 4:
-            //IORWF
-            cout << "IORWF" << endl;
-            break;
-            case 8:
-            //MOVF
-            cout << "MOVF" << endl;
-            break;
-            case 0:
-            switch(comm[2])
-            {
-                case 0:
-                switch(comm[3])
-                {
-                    case 0:
-                    //NOP
-                    cout << "NOP" << endl;
-                    break;
-                    case 9:
-                    //RETFIE
-                    cout << "RETFIE" << endl;
-                    break;
-                }
-                case 6:
-                switch(comm[3])
-                {
-                    case 4:
-                    //CLRWDT
-                    cout << "CLRWDT" << endl;
-                    break;
-                    case 8:
-                    //RETURN
-                    cout << "RETURN" << endl;
-                    break;
-                    case 3:
-                    //SLEEP
-                    cout << "SLEEP" << endl;
-                    break;
-                }
-                case 8 ... 0xF:
-                //MOVWF
-                cout << "MOVWF" << endl;
-                break;
-                
-            }
-
-            case 0xD:
-            //RLF
-            cout << "RLF" << endl;
-            break;
-            case 0xC:
-            //RRF
-            cout << "RRF" << endl;
-            break;
-            case 2:
-            //SUBWF
-            cout << "SUBWF" << endl;
-            break;
-            case 0xE:
-            //SWAPF
-            cout << "SWAPF" << endl;
-            break;
-            case 6:
-            //XORWF
-            cout << "XORWF" << endl;
-            break;
-        }
-        break;
-        case 1:
-
-        cout << "Case 1" << endl;
-
-        switch(comm[1])
-        {
-            case 0 ... 3:
-            //BCF
-            cout << "BCF" << endl;
-            break;
-            case 4 ... 7:
-            //BSF
-            cout << "BSF" << endl;
-            break;
-            case 8 ... 0xB:
-            //BTFSC
-            cout << "BTFSC" << endl;
-            break;
-            case 0xC ... 0xF:
-            //BTFSS
-            cout << "BTFSS" << endl;
-            break;
-        }
-        break;
-        case 2:
-
-        cout << "Case 2" << endl;
-
-        switch(comm[1])
-        {
-            case 0 ... 7:
-            //CALL
-            cout << "CALL" << endl;
-            break;
-            case 8 ... 0xF:
-            //GOTO
-            cout << "GOTO" << endl;
-            break;
-        }
-        break;
-        case 3:
-
-        cout << "Case 3" << endl;
-        
-        switch(comm[1])
-        {
-            case 0xE:
-            //ADDLW
-            cout << "ADDLW" << endl;
-            break;
-            case 9:
-            //ANDLW
-            cout << "ANDLW" << endl;
-            break;
-            case 8:
-            //IORLW
-            cout << "IORLW" << endl;
-            break;
-            case 0:
-            //MOVLW
-            cout << "MOVLW" << endl;
-            break;
-            case 0xC:
-            //SUBLW
-            cout << "SUBLW" << endl;
-            break;
-            case 0xA:
-            //XORLW
-            cout << "XORLW" << endl;
-            break;
-        }
-        break;
-        default:
-        ;
-    }
-
-}

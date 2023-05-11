@@ -13,11 +13,21 @@ Gui::Gui()
     window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "PIC-Simulator");
     window->setFramerateLimit(60);
 
-    rectangle = new sf::RectangleShape(sf::Vector2f(1920,1080));
-    rectangle->setFillColor(sf::Color(50,62,98,255));
+    backgroundrect = new sf::RectangleShape(sf::Vector2f(1920,1080));
+    backgroundrect->setFillColor(sf::Color(50,62,98,255));
 
+    programbackgroundrect = new sf::RectangleShape(sf::Vector2f(500, 700));
+    programbackgroundrect->setFillColor(sf::Color(255,255,255,255));
+    programbackgroundrect->setPosition(sf::Vector2f(100,100));
 
-    
+    programmemoryrect = new sf::RectangleShape(sf::Vector2f(250,700));
+    programmemoryrect->setFillColor(sf::Color(255,255,255,255));
+    programmemoryrect->setPosition(sf::Vector2f(700,100));
+
+    registerrect = new sf::RectangleShape(sf::Vector2f(250,450));
+    registerrect->setFillColor(sf::Color(255,255,255,255));
+    registerrect->setPosition(sf::Vector2f(1050,100));
+
     while(window->isOpen())
     {
         sf::Event event;
@@ -41,7 +51,10 @@ Gui::Gui()
 
         window->clear();                                            //clear last frame
 
-        window->draw(*rectangle);                                   //draw Visuals
+        window->draw(*backgroundrect);
+        window->draw(*programbackgroundrect);    
+        window->draw(*programmemoryrect);
+        window->draw(*registerrect);                               //draw Visuals
 
         window->display();                                          //display updated frame
     }

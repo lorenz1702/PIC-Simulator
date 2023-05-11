@@ -21,6 +21,7 @@ int main()
     Engine engine;
 
     scanner.putcommandsinprogrammemory(engine);
+
     /*
     for (int i = 0; i < 10; i++) 
     {
