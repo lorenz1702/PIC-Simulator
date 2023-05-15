@@ -134,6 +134,15 @@ void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" fo
     */
     
     //switch statement with all commands
+    int intTemp = W;
+    string stringTemp = pcommand;
+    stringTemp.insert(0, "0x");
+    cout << stringTemp << endl;
+    int newcommand;
+    newcommand = stoul(stringTemp, nullptr, 16);
+    
+    cout << "NewCommand:" << newcommand << endl;
+    
     switch (comm[0])
     {
         case 0:
@@ -297,6 +306,12 @@ void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" fo
             case 0xE:
             //ADDLW
             cout << "ADDLW" << endl;
+            cout << "NEWCOMMAND:" << newcommand << endl;
+            intTemp = newcommand && 0x01ff;
+            cout << "intTemp: " << intTemp << endl;
+            W = add(intTemp, newcommand);
+            cout << "W: " << W << endl; 
+
             break;
             case 9:
             //ANDLW
@@ -331,4 +346,16 @@ void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" fo
         controlCommand();
     }
 
+}
+
+int Engine::add(int x, int y)
+{
+    int carry;
+    while (y != 0)
+    {
+        carry = x & y;
+        x = x ^ y;
+        y = carry << 1;
+    }
+    return x;
 }
