@@ -14,6 +14,24 @@ Engine::Engine()
     {
         this->programmemory[i] = "0";
     }
+
+    PORTA = 5;
+    PORTB = 6;
+    TRISA = 5;
+    TRISB = 6;
+    FSR = 4;
+    TMR0 = 1;
+    OPTION = 1;
+    PCL = 2;
+    STATUS = 3;
+    EEDATA = 8;
+    EEADR = 9;
+    EECON1 = 8;
+    EECON2 = 9;
+    PCLATH = 10;
+    INTCON = 11;
+
+    IP = 0;
 }
 
 Engine::~Engine()
@@ -90,21 +108,30 @@ Engine::~Engine()
 
 
 */
+void Engine::controlCommand()
+{
+    string currentcommand;
+    currentcommand = programmemory[IP];
+    executeCommand(currentcommand);
+
+}
 
 void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" for MOVLW
 {
     
-    cout << "pcommand:" << pcommand << endl;
+    //cout << "pcommand:" << pcommand << endl;
     int comm[4];
     comm[0] = stoi(pcommand.substr(0,1), nullptr, 16);
     comm[1] = stoi(pcommand.substr(1,1), nullptr, 16);
     comm[2] = stoi(pcommand.substr(2,1), nullptr, 16);
     comm[3] = stoi(pcommand.substr(3,1), nullptr, 16);
 
+    /*
     cout << "comm[0]:" << comm[0] << endl;
     cout << "comm[1]:" << comm[1] << endl;
     cout << "comm[2]:" << comm[2] << endl;
     cout << "comm[3]:" << comm[3] << endl;
+    */
     
     //switch statement with all commands
     switch (comm[0])
@@ -295,6 +322,13 @@ void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" fo
         break;
         default:
         ;
+    }
+
+    IP++;
+
+    if(programmemory[IP] != "0")
+    {
+        controlCommand();
     }
 
 }

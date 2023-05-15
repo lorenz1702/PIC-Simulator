@@ -75,10 +75,10 @@ Gui::Gui()
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            filetext.move(moveSpeed * clock.getElapsedTime().asSeconds(), 0);
+            filetext.move(0 , moveSpeed * clock.getElapsedTime().asSeconds());
         } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            filetext.move(-moveSpeed * clock.getElapsedTime().asSeconds(), 0);
+            filetext.move(0, -moveSpeed * clock.getElapsedTime().asSeconds());
         }
 
         window->clear();                                            //clear last frame
