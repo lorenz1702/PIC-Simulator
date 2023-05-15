@@ -15,7 +15,11 @@ Gui::Gui()
     sf::RenderWindow gui;
     gui.create(sf::VideoMode::getDesktopMode(), "PIC-Simulator", sf::Style::Fullscreen);
 
-    DataStorage datastorage(gui.getSize().x, gui.getSize().y);
+
+    printf("length: %i\n", gui.getSize().x);
+    printf("height: %i\n", gui.getSize().y);
+
+    DataStorage datastorage(1920,1080);
     
     //IOPins iopins;
     //SpecialFunctionRegister specialfunctionregister;
