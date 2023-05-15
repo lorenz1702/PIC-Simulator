@@ -13,8 +13,10 @@
 class Gui
 {
     private:
-    sf::Window* gui;
-
+    sf::RenderWindow* window;
+    sf::RectangleShape* backgroundrect, *programbackgroundrect, *programmemoryrect, *registerrect;
+    sf::Text filetext;
+    sf::Font font;
     public:
     Gui();
     ~Gui();

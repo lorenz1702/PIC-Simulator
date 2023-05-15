@@ -21,20 +21,14 @@ int main()
     Engine engine;
 
     scanner.putcommandsinprogrammemory(engine);
-    
+
+
     for (int i = 0; i < 10; i++) 
     {
         //std::cout << "myArray[" << i << "] = " << (engine.programmemory[i]&0x3fff) << std::endl;
-        printf("Wert Programmemory an der Stelle %i: %s\n",i ,engine.programmemory[i]);
+        //printf("Wert Programmemory an der Stelle %i: %c\n",i ,engine.programmemory[i]);
+        cout << "Wert Programmemory an der Stelle " << i << ": " << engine.programmemory[i] << endl;
     }
-    /*
-    std::string test;
-    test = "3011";
-    scanner.executeCommand(test);
-    */
-
-   for (int i = 0; i <10; i++){
-
-    engine.executeCommand(engine.programmemory[i]);
-   }
+    
+    
 }

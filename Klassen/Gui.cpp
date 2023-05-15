@@ -1,50 +1,96 @@
 #include "Gui.h"
-#include "DataStorage.h"
-#include "DataStorage.cpp"
-
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <stdlib.h>
 #include <windows.h>
 #include <chrono>
 
+using namespace std;
+
 Gui::Gui()
 {
-    sf::RenderWindow gui;
-    gui.create(sf::VideoMode::getDesktopMode(), "PIC-Simulator", sf::Style::Fullscreen);
+    //Create Window and Visuals
+    window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "PIC-Simulator");
+    window->setFramerateLimit(60);
+
+    font.loadFromFile("C:\\Users\\sarah\\AppData\\Local\\Microsoft\\Windows\\Fonts\\SourceCodePro-Regular.ttf");
+
+    ifstream file;
+    file.open("TestProg_PicSim/TPicSim1.LST");
+    stringstream buffer;
+    buffer << file.rdbuf();
+    string txt;
+    txt = buffer.str();
+    file.close();
+    filetext.setString(txt);
+    filetext.setColor(sf::Color::Black);
+    filetext.setFont(font);
+    filetext.setCharacterSize(16);
+    filetext.setPosition(sf::Vector2f(105,105));
+
+    backgroundrect = new sf::RectangleShape(sf::Vector2f(1920,1080));
+    backgroundrect->setFillColor(sf::Color(50,62,98,255));
+
+    programbackgroundrect = new sf::RectangleShape(sf::Vector2f(filetext.getLocalBounds().width + 10, filetext.getLocalBounds().height + 10));
+    programbackgroundrect->setFillColor(sf::Color(255,255,255,255));
+    programbackgroundrect->setPosition(sf::Vector2f(100,100));
+
+    programmemoryrect = new sf::RectangleShape(sf::Vector2f(250,700));
+    programmemoryrect->setFillColor(sf::Color(255,255,255,255));
+    programmemoryrect->setPosition(sf::Vector2f(programbackgroundrect->getLocalBounds().width + 250, 100));
+
+    registerrect = new sf::RectangleShape(sf::Vector2f(250,450));
+    registerrect->setFillColor(sf::Color(255,255,255,255));
+    registerrect->setPosition(sf::Vector2f(programmemoryrect->getPosition().x + 350, 100));
 
 
-    printf("length: %i\n", gui.getSize().x);
-    printf("height: %i\n", gui.getSize().y);
+    float moveSpeed = 10000.0f;
+    sf::Clock clock;
 
-    DataStorage datastorage(1920,1080);
-    
-    //IOPins iopins;
-    //SpecialFunctionRegister specialfunctionregister;
-    //ControlPanel controlpanel;
-    //LSTData lstdata;
-
-    gui.setFramerateLimit(60);
-
-    while (gui.isOpen())
+    while(window->isOpen())
     {
-        // check all the window's events that were triggered since the last iteration of the loop
+        clock.restart();
         sf::Event event;
-        while (gui.pollEvent(event))
+
+        while(window->pollEvent(event))                             //event handling loop
         {
-            if (event.type == sf::Event::Closed)
-                gui.close();
+            switch(event.type)
+            {
+                case sf::Event::Closed:
+                    window->close();
+                    break;
+                case sf::Event::KeyPressed:
+                    if(event.key.code == sf::Keyboard::Escape)      //if Escape is pressed, close the window
+                    {
+                        window->close();                                       
+                    }                                            
+                
+                break;
+            }
         }
 
-        gui.clear();
-        gui.draw(datastorage.rectangle);
-        gui.display();
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            filetext.move(moveSpeed * clock.getElapsedTime().asSeconds(), 0);
+        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            filetext.move(-moveSpeed * clock.getElapsedTime().asSeconds(), 0);
+        }
+
+        window->clear();                                            //clear last frame
+
+        window->draw(*backgroundrect);
+        window->draw(*programbackgroundrect);    
+        window->draw(*programmemoryrect);
+        window->draw(*registerrect);
+        window->draw(filetext);                               //draw Visuals
+
+        window->display();                                          //display updated frame
     }
-    
-
-
 }
 
 Gui::~Gui()

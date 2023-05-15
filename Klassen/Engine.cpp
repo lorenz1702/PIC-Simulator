@@ -5,7 +5,6 @@
 #include <string>
 #include <stdlib.h>
 #include <windows.h>
-#include <iomanip>
 
 using namespace std;
 
@@ -13,7 +12,7 @@ Engine::Engine()
 {
     for(int i = 0; i < 1024; i++)
     {
-        this->programmemory[i] = '0';
+        this->programmemory[i] = "0";
     }
 }
 
@@ -92,8 +91,9 @@ Engine::~Engine()
 
 */
 
-int Engine::executeCommand(string pcommand)
+void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" for MOVLW
 {
+    
     cout << "pcommand:" << pcommand << endl;
     int comm[4];
     comm[0] = stoi(pcommand.substr(0,1), nullptr, 16);
@@ -106,6 +106,7 @@ int Engine::executeCommand(string pcommand)
     cout << "comm[2]:" << comm[2] << endl;
     cout << "comm[3]:" << comm[3] << endl;
     
+    //switch statement with all commands
     switch (comm[0])
     {
         case 0:
@@ -295,5 +296,5 @@ int Engine::executeCommand(string pcommand)
         default:
         ;
     }
-    return 0;
+
 }
