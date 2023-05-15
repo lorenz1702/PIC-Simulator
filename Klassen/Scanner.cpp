@@ -46,6 +46,10 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
 
         string indexStr = line.substr(0, 4);
         string valueStr = line.substr(5, 4);
+
+        cout << indexStr << endl;
+        cout << valueStr << endl;
+        
         //call execution Method
         int index = stoi(indexStr);
 

@@ -22,12 +22,13 @@ int main()
 
     scanner.putcommandsinprogrammemory(engine);
 
-    /*
+
     for (int i = 0; i < 10; i++) 
     {
         //std::cout << "myArray[" << i << "] = " << (engine.programmemory[i]&0x3fff) << std::endl;
-        printf("Wert Programmemory an der Stelle %i: %i\n",i ,engine.programmemory[i]);
+        //printf("Wert Programmemory an der Stelle %i: %c\n",i ,engine.programmemory[i]);
+        cout << "Wert Programmemory an der Stelle " << i << ": " << engine.programmemory[i] << endl;
     }
     
-    */
+    
 }

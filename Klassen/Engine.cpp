@@ -95,9 +95,19 @@ void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" fo
 {
     
     cout << "pcommand:" << pcommand << endl;
+    int comm[4];
+    comm[0] = stoi(pcommand.substr(0,1), nullptr, 16);
+    comm[1] = stoi(pcommand.substr(1,1), nullptr, 16);
+    comm[2] = stoi(pcommand.substr(2,1), nullptr, 16);
+    comm[3] = stoi(pcommand.substr(3,1), nullptr, 16);
+
+    cout << "comm[0]:" << comm[0] << endl;
+    cout << "comm[1]:" << comm[1] << endl;
+    cout << "comm[2]:" << comm[2] << endl;
+    cout << "comm[3]:" << comm[3] << endl;
     
     //switch statement with all commands
-    switch (pcommand)
+    switch (comm[0])
     {
         case 0:
         cout << "Case 0" << endl;
