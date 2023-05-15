@@ -17,7 +17,13 @@ class Engine
     Engine();
     ~Engine();
     std::string programmemory[1024]; //oberen 2 Bits sind immer 0, ggf. verunden
+    void controlCommand();           // Interrupt, IP und Befehl aus Programmemory holen
     void executeCommand(std::string pcommand);
+    int DatamemoryB1[128];
+    int compareDatamemoryB1[128];
+    int PORTA,PORTB,TRISA,TRISB,FSR,TMR0,OPTION,PCL,STATUS,EEDATA,EEADR,EECON1,EECON2,PCLATH,INTCON;
+    int IP;
+
 
 } ;
 

@@ -14,13 +14,14 @@ using namespace std;
 
 int main()
 {
-    Gui Gui;
+    //Gui Gui;
 
     Scanner scanner;
 
     Engine engine;
 
     scanner.putcommandsinprogrammemory(engine);
+    engine.controlCommand();
 
 
     for (int i = 0; i < 10; i++) 
@@ -30,5 +31,6 @@ int main()
         cout << "Wert Programmemory an der Stelle " << i << ": " << engine.programmemory[i] << endl;
     }
     
+
     
 }
