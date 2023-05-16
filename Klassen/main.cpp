@@ -12,9 +12,15 @@ using namespace std;
 //Programm starten:
 //-> Im Terminal beim Pfad dieses Ordners "Klassen" mingw32-make eingeben
 
+
+int bitwiseAND(int num1, int num2) {
+    int result = num1 & num2;
+    return result;
+}
 int main()
 {
     //Gui Gui;
+
 
     Scanner scanner;
 

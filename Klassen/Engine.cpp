@@ -120,7 +120,7 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
 {
     
     cout << "pCommand:" << pCommand << endl;
-    int valueW, intTemp;
+    int valueW, intTemp, result;
     valueW = W;
     //switch statement with all commands
     switch (pCommand)
@@ -177,6 +177,7 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
         break;
         case 0x0400 ... 0x04ff:
         cout << "IORWF" << endl;
+
         break;
         case 0x0800 ... 0x08ff:
         cout << "MOVF" << endl;
@@ -227,18 +228,32 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
         break;
         case 0x3900 ... 0x39ff:
         cout << "ANDLW" << endl;
+        intTemp = pCommand & 0x00ff;
+        W = intTemp & valueW;  //the contents of W are bitwiseAND'ed with the literal intTemp 
         break;
         case 0x3800 ... 0x38ff:
-        cout << "IORLW" << endl;
+        cout << "IORLW" << endl;  
+        intTemp = pCommand & 0x00ff;
+        W = intTemp | valueW;  //should not have influence on the Z-Flag
         break;
         case 0x3000 ... 0x30ff:
         cout << "MOVLW" << endl;
+        intTemp = pCommand & 0x00ff;
+        W = intTemp;
         break;
         case 0x3C00 ... 0x3Cff:
         cout << "SUBLW" << endl;
+        intTemp = pCommand & 0x00ff;
+        valueW = -W;
+        W = intTemp + valueW;
+        if (W <= 0){carry == 1;zero == 0;}
+        if (W == 0)zero == 1;
+        if (W > 0){carry == 0; zero == 0;}
         break;
         case 0x3A00 ... 0x3Aff:
         cout << "XORLW" << endl;
+        intTemp = pCommand & 0x00ff;
+        W = intTemp ^ valueW;
         break;
     }
 
@@ -246,6 +261,7 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
 
     if(programmemory[IP] != 0)
     {
+        
         controlCommand();
     }
     
@@ -254,7 +270,7 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
 
 int Engine::add(int pX, int pY)
 {
-    int carry;
+    
     while (pY != 0)
     {
         carry = pX & pY;

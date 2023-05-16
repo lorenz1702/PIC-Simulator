@@ -23,6 +23,7 @@ class Engine
     int DatamemoryB1[128];
     int compareDatamemoryB1[128];
     int PORTA,PORTB,TRISA,TRISB,FSR,TMR0,OPTION,PCL,STATUS,EEDATA,EEADR,EECON1,EECON2,PCLATH,INTCON;
+    int zero, carry, Dcarry;
     int W;
     int IP;
 
