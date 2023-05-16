@@ -54,7 +54,7 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
         int index = stoi(indexStr);
 
         if (index >= 0 && index < 1024) {
-                engine.programmemory[index] = valueStr;
+                engine.programmemory[index] = stoi(valueStr, nullptr, 16);
             } else {
                 cout << "Index out of range: " << index << endl;
             } 

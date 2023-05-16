@@ -12,7 +12,7 @@ Engine::Engine()
 {
     for(int i = 0; i < 1024; i++)
     {
-        this->programmemory[i] = "0";
+        this->programmemory[i] = 0;
     }
 
     PORTA = 5;
@@ -44,48 +44,48 @@ Engine::~Engine()
 
     COMMAND:                    CODE:  
     -------------------------------------------------------
-    ADDWF                       07              00 0111 dfff ffff
-    ANDWF                       05              00 0101 dfff ffff
-    CLRF                        01              00 0001 1fff ffff
-    CLRW                        01              00 0001 0xxx xxxx
-    COMF                        09              00 1001 dfff ffff
-    DECF                        03              00 0011 dfff ffff
-    DECFSZ                      0B              00 1011 dfff ffff
-    INCF                        0A              00 1010 dfff ffff
-    INCFSZ                      0F              00 1111 dfff ffff
-    IORWF                       04              00 0100 dfff ffff
-    MOVF                        08              00 1000 dfff ffff
+    ADDWF                       0700 - 07FF     00 0111 dfff ffff
+    ANDWF                       0500 - 05FF     00 0101 dfff ffff
+    CLRF                        0180 - 01FF     00 0001 1fff ffff
+    CLRW                        0100            00 0001 0xxx xxxx
+    COMF                        0900 - 09ff     00 1001 dfff ffff
+    DECF                        0300 - 03ff     00 0011 dfff ffff
+    DECFSZ                      0B00 - 0Bff     00 1011 dfff ffff
+    INCF                        0A00 - 0Aff     00 1010 dfff ffff
+    INCFSZ                      0F00 - 0Fff     00 1111 dfff ffff
+    IORWF                       0400 - 04ff     00 0100 dfff ffff
+    MOVF                        0800 - 08ff     00 1000 dfff ffff
 
-    MOVWF                       00              00 0000 1fff ffff
-    NOP                         00              00 0000 0xx0 0000
+    MOVWF                       0080 - 00FF     00 0000 1fff ffff
+    NOP                         0000            00 0000 0xx0 0000
     
-    RLF                         0D              00 1101 dfff ffff
-    RRF                         0C              00 1100 dfff ffff
-    SUBWF                       02              00 0010 dfff ffff
-    SWAPF                       0E              00 1110 dfff ffff
-    XORWF                       06              00 0110 dfff ffff
+    RLF                         0D00 - 0Dff     00 1101 dfff ffff
+    RRF                         0C00 - 0Cff     00 1100 dfff ffff
+    SUBWF                       0200 - 02ff     00 0010 dfff ffff
+    SWAPF                       0E00 - 0Eff     00 1110 dfff ffff
+    XORWF                       0600 - 06ff     00 0110 dfff ffff
 
-    BCF                         10 - 13         01 00bb bfff ffff                         
-    BSF                         14 - 17         01 01bb bfff ffff
-    BTFSC                       18 - 1B         01 10bb bfff ffff
-    BTFSS                       1C - 1F         01 11bb bfff ffff
+    BCF                         1000 - 13ff     01 00bb bfff ffff                         
+    BSF                         1400 - 17ff     01 01bb bfff ffff
+    BTFSC                       1800 - 1Bff     01 10bb bfff ffff
+    BTFSS                       1C00 - 1Fff     01 11bb bfff ffff
 
-    ADDLW                       3E              11 111x kkkk kkkk
-    ANDLW                       39              11 1001 kkkk kkkk
-    CALL                        20 - 27         10 0kkk kkkk kkkk   -> ks geben Adresse an -> wird an Programmzähler übergeben
+    ADDLW                       3E00 - 3Eff     11 111x kkkk kkkk
+    ANDLW                       3900 - 39ff     11 1001 kkkk kkkk
+    CALL                        2000 - 27ff     10 0kkk kkkk kkkk   -> ks geben Adresse an -> wird an Programmzähler übergeben
 
     CLRWDT                      0064            00 0000 0110 0100
 
-    GOTO                        28 - 2F         10 1kkk kkkk kkkk  
-    IORLW                       38              11 1000 kkkk kkkk
-    MOVLW                       30              11 00xx kkkk kkkk
+    GOTO                        2800 - 2Fff     10 1kkk kkkk kkkk  
+    IORLW                       3800 - 38ff     11 1000 kkkk kkkk
+    MOVLW                       3000 - 30ff     11 00xx kkkk kkkk
 
     RETFIE                      0009            00 0000 0000 1001
     RETURN                      0068            00 0000 0110 1000
     SLEEP                       0063            00 0000 0110 0011
 
-    SUBLW                       3C              11 110x kkkk kkkk
-    XORLW                       3A              11 1010 kkkk kkkk
+    SUBLW                       3C00 - 3Cff     11 110x kkkk kkkk
+    XORLW                       3A00 - 3Aff     11 1010 kkkk kkkk
 
     f       Register file address (0x00 to 0x7F)
     W       Working register (accumulator)
@@ -110,252 +110,156 @@ Engine::~Engine()
 */
 void Engine::controlCommand()
 {
-    string currentcommand;
+    int currentcommand;
     currentcommand = programmemory[IP];
     executeCommand(currentcommand);
 
 }
 
-void Engine::executeCommand(string pcommand)   //pcommand: for example "3011" for MOVLW
+void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for MOVLW
 {
     
-    //cout << "pcommand:" << pcommand << endl;
-    int comm[4];
-    comm[0] = stoi(pcommand.substr(0,1), nullptr, 16);
-    comm[1] = stoi(pcommand.substr(1,1), nullptr, 16);
-    comm[2] = stoi(pcommand.substr(2,1), nullptr, 16);
-    comm[3] = stoi(pcommand.substr(3,1), nullptr, 16);
-
-    /*
-    cout << "comm[0]:" << comm[0] << endl;
-    cout << "comm[1]:" << comm[1] << endl;
-    cout << "comm[2]:" << comm[2] << endl;
-    cout << "comm[3]:" << comm[3] << endl;
-    */
-    
+    cout << "pCommand:" << pCommand << endl;
+    int valueW, intTemp;
+    valueW = W;
     //switch statement with all commands
-    int intTemp = W;
-    string stringTemp = pcommand;
-    stringTemp.insert(0, "0x");
-    cout << stringTemp << endl;
-    int newcommand;
-    newcommand = stoul(stringTemp, nullptr, 16);
-    
-    cout << "NewCommand:" << newcommand << endl;
-    
-    switch (comm[0])
+    switch (pCommand)
     {
-        case 0:
-        cout << "Case 0" << endl;
-        switch(comm[1])
-        {
-            case 7:
-            //ADDWF
-            cout << "ADDWF" << endl;
-            break;
-            case 5:
-            //ANDWF
-            cout << "ANDWF" << endl;
-            break;
-            case 1:
-            switch(comm[2])
-            {
-                case 8 ... 0xF:
-                //CLRF
-                cout << "CLRF" << endl;
-                break;
-                case 0:
-                //CLRW
-                cout << "CLRW" << endl;
-                break;
-            }
-            case 9:
-            //COMF
-            cout << "COMF" << endl;
-            break;
-            case 3:
-            //DECF
-            cout << "DECF" << endl;
-            break;
-            case 0xB:
-            //DECFSZ
-            cout << "DECFSZ" << endl;
-            break;
-            case 0xA:
-            //INCF
-            cout << "INCF" << endl;
-            break;
-            case 0xF:
-            //INCFSZ
-            cout << "INCFSZ" << endl;
-            break;
-            case 4:
-            //IORWF
-            cout << "IORWF" << endl;
-            break;
-            case 8:
-            //MOVF
-            cout << "MOVF" << endl;
-            break;
-            case 0:
-            switch(comm[2])
-            {
-                case 0:
-                switch(comm[3])
-                {
-                    case 0:
-                    //NOP
-                    cout << "NOP" << endl;
-                    break;
-                    case 9:
-                    //RETFIE
-                    cout << "RETFIE" << endl;
-                    break;
-                }
-                case 6:
-                switch(comm[3])
-                {
-                    case 4:
-                    //CLRWDT
-                    cout << "CLRWDT" << endl;
-                    break;
-                    case 8:
-                    //RETURN
-                    cout << "RETURN" << endl;
-                    break;
-                    case 3:
-                    //SLEEP
-                    cout << "SLEEP" << endl;
-                    break;
-                }
-                case 8 ... 0xF:
-                //MOVWF
-                cout << "MOVWF" << endl;
-                break;
-                
-            }
-
-            case 0xD:
-            //RLF
-            cout << "RLF" << endl;
-            break;
-            case 0xC:
-            //RRF
-            cout << "RRF" << endl;
-            break;
-            case 2:
-            //SUBWF
-            cout << "SUBWF" << endl;
-            break;
-            case 0xE:
-            //SWAPF
-            cout << "SWAPF" << endl;
-            break;
-            case 6:
-            //XORWF
-            cout << "XORWF" << endl;
-            break;
-        }
+        case 0x0100:
+        cout << "CLRW" << endl;
         break;
-        case 1:
-
-        cout << "Case 1" << endl;
-
-        switch(comm[1])
-        {
-            case 0 ... 3:
-            //BCF
-            cout << "BCF" << endl;
-            break;
-            case 4 ... 7:
-            //BSF
-            cout << "BSF" << endl;
-            break;
-            case 8 ... 0xB:
-            //BTFSC
-            cout << "BTFSC" << endl;
-            break;
-            case 0xC ... 0xF:
-            //BTFSS
-            cout << "BTFSS" << endl;
-            break;
-        }
+        case 0x0000:
+        cout << "NOP" << endl;
         break;
-        case 2:
-
-        cout << "Case 2" << endl;
-
-        switch(comm[1])
-        {
-            case 0 ... 7:
-            //CALL
-            cout << "CALL" << endl;
-            break;
-            case 8 ... 0xF:
-            //GOTO
-            cout << "GOTO" << endl;
-            break;
-        }
+        case 0x0064:
+        cout << "CLRWDT" << endl;
         break;
-        case 3:
+        case 0x0009:
+        cout << "RETFIE" << endl;
+        break;
+        case 0x0068:
+        cout << "RETURN" << endl;
+        break;
+        case 0x0063:
+        cout << "SLEEP" << endl;
+        break;
+    }
 
-        cout << "Case 3" << endl;
+    int newCommand = pCommand & 0x3f00;
+    cout << "NewCommand: " << newCommand << endl;
+
+    switch(newCommand)
+    {
+        case 0x0700 ... 0x07FF:
         
-        switch(comm[1])
-        {
-            case 0xE:
-            //ADDLW
-            cout << "ADDLW" << endl;
-            cout << "NEWCOMMAND:" << newcommand << endl;
-            intTemp = newcommand && 0x01ff;
-            cout << "intTemp: " << intTemp << endl;
-            W = add(intTemp, newcommand);
-            cout << "W: " << W << endl; 
-
-            break;
-            case 9:
-            //ANDLW
-            cout << "ANDLW" << endl;
-            break;
-            case 8:
-            //IORLW
-            cout << "IORLW" << endl;
-            break;
-            case 0:
-            //MOVLW
-            cout << "MOVLW" << endl;
-            break;
-            case 0xC:
-            //SUBLW
-            cout << "SUBLW" << endl;
-            break;
-            case 0xA:
-            //XORLW
-            cout << "XORLW" << endl;
-            break;
-        }
+        cout << "ADDWF" << endl;
         break;
-        default:
-        ;
+        case 0x0500 ... 0x05FF:
+        cout << "ANDWF" << endl;
+        break;
+        case 0x0180 ... 0x01FF:
+        cout << "CLRF" << endl;
+        break;
+        case 0x0900 ... 0x09ff:
+        cout << "COMF" << endl;
+        break;
+        case 0x0300 ... 0x03ff:
+        cout << "DECF" << endl;
+        break;
+        case 0x0B00 ... 0x0Bff:
+        cout << "DECFSZ" << endl;
+        break;
+        case 0x0A00 ... 0x0Aff:
+        cout << "INCF" << endl;
+        break;
+        case 0x0F00 ... 0x0Fff:
+        cout << "INCFSZ" << endl;
+        break;
+        case 0x0400 ... 0x04ff:
+        cout << "IORWF" << endl;
+        break;
+        case 0x0800 ... 0x08ff:
+        cout << "MOVF" << endl;
+        break;
+        case 0x0080 ... 0x00FF:
+        cout << "MOVWF" << endl;
+        break;
+        case 0x0D00 ... 0x0Dff:
+        cout << "RLF" << endl;
+        break;
+        case 0x0C00 ... 0x0Cff:
+        cout << "RRF" << endl;
+        break;
+        case 0x0200 ... 0x02ff:
+        cout << "SUBWF" << endl;
+        break;
+        case 0x0E00 ... 0x0Eff:
+        cout << "SWAPF" << endl;
+        break;
+        case 0x0600 ... 0x06ff:
+        cout << "XORWF" << endl;
+        break;
+        case 0x1000 ... 0x13ff:
+        cout << "BCF" << endl;
+        break;
+        case 0x1400 ... 0x17ff:
+        cout << "BSF" << endl;
+        break;
+        case 0x1800 ... 0x1Bff:
+        cout << "BTFSC" << endl;
+        break;
+        case 0x1C00 ... 0x1Fff:
+        cout << "BTFSS" << endl;
+        break;
+        case 0x2000 ... 0x27ff:
+        cout << "CALL" << endl;
+        break;
+        case 0x2800 ... 0x2Fff:
+        cout << "GOTO" << endl;
+        break;
+        case 0x3E00 ... 0x3Eff:
+        cout << "ADDLW" << endl;
+        cout << "pCommand: " << pCommand << endl;
+        intTemp = pCommand & 0x01ff;
+        cout << "intTemp: " << intTemp << endl;
+        W = add(intTemp, valueW);
+        cout << "W: " << W << endl; 
+        break;
+        case 0x3900 ... 0x39ff:
+        cout << "ANDLW" << endl;
+        break;
+        case 0x3800 ... 0x38ff:
+        cout << "IORLW" << endl;
+        break;
+        case 0x3000 ... 0x30ff:
+        cout << "MOVLW" << endl;
+        break;
+        case 0x3C00 ... 0x3Cff:
+        cout << "SUBLW" << endl;
+        break;
+        case 0x3A00 ... 0x3Aff:
+        cout << "XORLW" << endl;
+        break;
     }
 
     IP++;
 
-    if(programmemory[IP] != "0")
+    if(programmemory[IP] != 0)
     {
         controlCommand();
     }
+    
 
 }
 
-int Engine::add(int x, int y)
+int Engine::add(int pX, int pY)
 {
     int carry;
-    while (y != 0)
+    while (pY != 0)
     {
-        carry = x & y;
-        x = x ^ y;
-        y = carry << 1;
+        carry = pX & pY;
+        pX = pX ^ pY;
+        pY = carry << 1;
     }
-    return x;
+    return pX;
 }
