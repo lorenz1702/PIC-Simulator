@@ -8,13 +8,15 @@
 
 using namespace std;
 
-Engine::Engine()
+Engine::Engine()                    //Engine constructor
 {
+    //initialize programmemory
     for(int i = 0; i < 1024; i++)
     {
         this->programmemory[i] = 0;
     }
 
+    //initialize speciel registers
     PORTA = 5;
     PORTB = 6;
     TRISA = 5;
@@ -32,9 +34,12 @@ Engine::Engine()
     INTCON = 11;
 
     IP = 0;
+    carry = 0;
+    zero = 0;
+    Dcarry = 0;
 }
 
-Engine::~Engine()
+Engine::~Engine()                   //Engine destructor
 {
 
 }
@@ -108,7 +113,8 @@ Engine::~Engine()
 
 
 */
-void Engine::controlCommand()
+
+void Engine::controlCommand()                   //set current command with help of programmemory and instruction pointer
 {
     int currentcommand;
     currentcommand = programmemory[IP];
@@ -116,12 +122,12 @@ void Engine::controlCommand()
 
 }
 
-void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for MOVLW
+void Engine::executeCommand(int pCommand)       //execute Command handles given command and changes registers/values
 {
     
     cout << "pCommand:" << pCommand << endl;
-    int valueW, intTemp, result;
-    valueW = W;
+    int valueW, intTemp, intBit, intReg, result;
+    valueW = W;                                 //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
     {
@@ -202,6 +208,29 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
         break;
         case 0x1000 ... 0x13ff:
         cout << "BCF" << endl;
+        //01 00bb bfff ffff
+        cout << "pCommand: " << pCommand << endl;
+        intBit = pCommand & 0x0380;
+        intReg = pCommand & 0x007f;
+        intTemp = pCommand & 0x00f0;
+        cout << "intBit: " << intBit << endl;
+        // 0000 1000 0000 -> 80 080
+        // 0001 1000 0000 -> 384 180
+        // 0001 0000 0000 -> 256 100
+        // 0010 0000 0000 -> 512 200
+        // 0010 1000 0000 -> 320 280
+        // 0011 0000 0000 -> 768 300
+        // 0011 1000 0000 -> 896 380
+        cout << "intReg: " << intReg << endl;
+        if(DatamemoryB0[3] >= 32)
+        {
+            DatamemoryB1[intReg] = intBit;
+            cout << "DatamemoryB1: " << DatamemoryB1[intReg] << endl;
+        } else 
+        {
+            DatamemoryB0[intReg] = intBit;
+            cout << "DatamemoryB0: " << DatamemoryB0[intReg] << endl;
+        }
         break;
         case 0x1400 ... 0x17ff:
         cout << "BSF" << endl;
@@ -229,33 +258,50 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
         case 0x3900 ... 0x39ff:
         cout << "ANDLW" << endl;
         intTemp = pCommand & 0x00ff;
-        W = intTemp & valueW;  //the contents of W are bitwiseAND'ed with the literal intTemp 
+        cout << "W vorher: " << W << endl; 
+        W = intTemp & valueW;
+        cout << "W: " << W << endl;                    //the contents of W are bitwiseAND'ed with the literal intTemp 
         break;
         case 0x3800 ... 0x38ff:
         cout << "IORLW" << endl;  
         intTemp = pCommand & 0x00ff;
-        W = intTemp | valueW;  //should not have influence on the Z-Flag
+        cout << "W vorher: " << W << endl; 
+        W = intTemp | valueW;
+        cout << "W: " << W << endl;                    //should not have influence on the Z-Flag
         break;
         case 0x3000 ... 0x30ff:
         cout << "MOVLW" << endl;
+        cout << "W vorher: " << W << endl; 
         intTemp = pCommand & 0x00ff;
         W = intTemp;
+        cout << "W: " << W << endl; 
         break;
         case 0x3C00 ... 0x3Cff:
         cout << "SUBLW" << endl;
         intTemp = pCommand & 0x00ff;
         valueW = -W;
-        W = intTemp + valueW;
-        if (W <= 0){carry == 1;zero == 0;}
+        cout << "W vorher: " << W << endl; 
+        W = add(intTemp,valueW);
+        cout << "W: " << W << endl; 
+        
+        if (W <= 0){carry == 0;zero == 0;}
         if (W == 0)zero == 1;
-        if (W > 0){carry == 0; zero == 0;}
+        if (W > 0){carry == 1; zero == 0;}
+        
         break;
         case 0x3A00 ... 0x3Aff:
         cout << "XORLW" << endl;
         intTemp = pCommand & 0x00ff;
+        cout << "W vorher: " << W << endl; 
         W = intTemp ^ valueW;
+        cout << "W: " << W << endl; 
         break;
     }
+
+    cout << "W: " << W << endl; 
+    cout << "C: " << carry << endl;
+    cout << "DC: " << Dcarry << endl;
+    cout << "Z: " << zero << endl;   
 
     IP++;
 
@@ -265,7 +311,6 @@ void Engine::executeCommand(int pCommand)   //pcommand: for example "3011" for M
         controlCommand();
     }
     
-
 }
 
 int Engine::add(int pX, int pY)
@@ -273,9 +318,9 @@ int Engine::add(int pX, int pY)
     
     while (pY != 0)
     {
-        carry = pX & pY;
+        int carry1 = pX & pY;
         pX = pX ^ pY;
-        pY = carry << 1;
+        pY = carry1 << 1;
     }
     return pX;
 }
