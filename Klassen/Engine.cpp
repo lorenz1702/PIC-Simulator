@@ -158,7 +158,20 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     {
         case 0x0700 ... 0x07FF:
         
-        cout << "ADDWF" << endl;
+        cout << "ADDWF" << endl;        // Addiere den Inhalt des W-Registers mit dem Inhalt des f-Registers
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp = 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            DatamemoryB0[intReg] = DatamemoryB0[intReg] + valueW; // schreibs in das Register der aktuellen Bank
+        } else 
+        {
+            ntReg = pCommand & 0x007f;
+            valueW = DatamemoryB0[intReg] + valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
+
         break;
         case 0x0500 ... 0x05FF:
         cout << "ANDWF" << endl;
@@ -210,9 +223,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "BCF" << endl;
         //01 00bb bfff ffff
         cout << "pCommand: " << pCommand << endl;
-        intBit = pCommand & 0x0380;
-        intReg = pCommand & 0x007f;
-        intTemp = pCommand & 0x00f0;
+        intBit = pCommand & 0x0380; // Maske für die b's
+        intReg = pCommand & 0x007f; // Maske für das Register
         cout << "intBit: " << intBit << endl;
         // 0000 1000 0000 -> 80 080
         // 0001 1000 0000 -> 384 180
@@ -222,13 +234,13 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         // 0011 0000 0000 -> 768 300
         // 0011 1000 0000 -> 896 380
         cout << "intReg: " << intReg << endl;
-        if(DatamemoryB0[3] >= 32)
+        if(DatamemoryB0[3] >= 32) // Wenn das RP0 Bit des Status Registers der Bank 0 gesetzt ist
         {
-            DatamemoryB1[intReg] = intBit;
+            DatamemoryB1[intReg] = intBit; // Änder den Wert in der Bank 1 (wird nochmal geändert werden müssen, da Funktion ausgelagert wird)
             cout << "DatamemoryB1: " << DatamemoryB1[intReg] << endl;
         } else 
         {
-            DatamemoryB0[intReg] = intBit;
+            DatamemoryB0[intReg] = intBit;  // Wenn RP0 =  0 ist, dann ändere den Wert auf der Bank 0
             cout << "DatamemoryB0: " << DatamemoryB0[intReg] << endl;
         }
         break;
