@@ -23,11 +23,11 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
     
     //FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.txt", "r");
     //ifstream inputFile("TestProg_PicSim/TPicSim1.txt");
-    ifstream file("TestProg_PicSim/TPicSim4.LST");
+    ifstream file("TestProg_PicSim/TPicSim5.LST");
     
     if (!file.is_open())                                        //error handling
     {
-        cout << "Could not open file " << "TestProg_PicSim/TPicSim4.LST" << endl;
+        cout << "Could not open file " << "TestProg_PicSim/TPicSim5.LST" << endl;
         return 1;
     }
 

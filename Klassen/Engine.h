@@ -20,8 +20,8 @@ class Engine
     void controlCommand();           // Interrupt, IP und Befehl aus Programmemory holen
     void executeCommand(int pCommand);
     int add(int pX, int pY);
+    int DatamemoryB0[128];
     int DatamemoryB1[128];
-    int compareDatamemoryB1[128];
     int PORTA,PORTB,TRISA,TRISB,FSR,TMR0,OPTION,PCL,STATUS,EEDATA,EEADR,EECON1,EECON2,PCLATH,INTCON;
     int zero, carry, Dcarry;
     int W;
