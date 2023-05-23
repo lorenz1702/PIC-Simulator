@@ -118,6 +118,7 @@ void Engine::controlCommand()                   //set current command with help 
 {
     int currentcommand;
     currentcommand = programmemory[IP];
+    cout << IP << endl;
     executeCommand(currentcommand);
 
 }
@@ -168,13 +169,25 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             DatamemoryB0[intReg] = DatamemoryB0[intReg] + valueW; // schreibs in das Register der aktuellen Bank
         } else 
         {
-            ntReg = pCommand & 0x007f;
+            intReg = pCommand & 0x007f;
             valueW = DatamemoryB0[intReg] + valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
 
         break;
         case 0x0500 ... 0x05FF:
         cout << "ANDWF" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp = 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            DatamemoryB0[intReg] = DatamemoryB0[intReg] & valueW; // schreibs in das Register der aktuellen Bank
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            W = DatamemoryB0[intReg] & valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
         break;
         case 0x0180 ... 0x01FF:
         cout << "CLRF" << endl;
@@ -203,6 +216,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x0080 ... 0x00FF:
         cout << "MOVWF" << endl;
+        intReg = pCommand & 0x007f;
+        DatamemoryB0[intReg] = valueW;
         break;
         case 0x0D00 ... 0x0Dff:
         cout << "RLF" << endl;
@@ -283,7 +298,6 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x3000 ... 0x30ff:
         cout << "MOVLW" << endl;
-        cout << "W vorher: " << W << endl; 
         intTemp = pCommand & 0x00ff;
         W = intTemp;
         cout << "W: " << W << endl; 
@@ -292,7 +306,6 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "SUBLW" << endl;
         intTemp = pCommand & 0x00ff;
         valueW = -W;
-        cout << "W vorher: " << W << endl; 
         W = add(intTemp,valueW);
         cout << "W: " << W << endl; 
         
