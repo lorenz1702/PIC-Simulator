@@ -118,7 +118,7 @@ void Engine::controlCommand()                   //set current command with help 
 {
     int currentcommand;
     currentcommand = programmemory[IP];
-    cout << IP << endl;
+    
     executeCommand(currentcommand);
 
 }
@@ -150,6 +150,17 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         case 0x0063:
         cout << "SLEEP" << endl;
         break;
+        case 0x0080 ... 0x00FF:
+        cout << "MOVWF" << endl;
+        intReg = pCommand & 0x007f;
+        DatamemoryB0[intReg] = valueW;
+        break;
+        case 0x0180 ... 0x01FF:
+        cout << "CLRF" << endl;
+        intReg = pCommand & 0x007f;
+        DatamemoryB0[intReg] = 0;
+        zero=1;
+        break;
     }
 
     int newCommand = pCommand & 0x3f00;
@@ -170,7 +181,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         } else 
         {
             intReg = pCommand & 0x007f;
-            valueW = DatamemoryB0[intReg] + valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
+            W = DatamemoryB0[intReg] + valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
 
         break;
@@ -189,14 +200,35 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             W = DatamemoryB0[intReg] & valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         break;
-        case 0x0180 ... 0x01FF:
-        cout << "CLRF" << endl;
-        break;
         case 0x0900 ... 0x09ff:
         cout << "COMF" << endl;
+                intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp = 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            DatamemoryB0[intReg] = ~DatamemoryB0[intReg] + ~valueW + 1; // schreibs in das Register der aktuellen Bank
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            W = ~DatamemoryB0[intReg] + ~valueW + 1; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
         break;
         case 0x0300 ... 0x03ff:
         cout << "DECF" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp = 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            DatamemoryB0[intReg] = DatamemoryB0[intReg] - 1; // schreibs in das Register der aktuellen Bank
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            W = DatamemoryB0[intReg] - 1; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
         break;
         case 0x0B00 ... 0x0Bff:
         cout << "DECFSZ" << endl;
@@ -214,11 +246,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         case 0x0800 ... 0x08ff:
         cout << "MOVF" << endl;
         break;
-        case 0x0080 ... 0x00FF:
-        cout << "MOVWF" << endl;
-        intReg = pCommand & 0x007f;
-        DatamemoryB0[intReg] = valueW;
-        break;
+
         case 0x0D00 ... 0x0Dff:
         cout << "RLF" << endl;
         break;
@@ -280,14 +308,12 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intTemp = pCommand & 0x01ff;
         cout << "intTemp: " << intTemp << endl;
         W = add(intTemp, valueW);
-        cout << "W: " << W << endl; 
         break;
         case 0x3900 ... 0x39ff:
         cout << "ANDLW" << endl;
         intTemp = pCommand & 0x00ff;
         cout << "W vorher: " << W << endl; 
-        W = intTemp & valueW;
-        cout << "W: " << W << endl;                    //the contents of W are bitwiseAND'ed with the literal intTemp 
+        W = intTemp & valueW;                 //the contents of W are bitwiseAND'ed with the literal intTemp 
         break;
         case 0x3800 ... 0x38ff:
         cout << "IORLW" << endl;  
@@ -326,7 +352,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     cout << "W: " << W << endl; 
     cout << "C: " << carry << endl;
     cout << "DC: " << Dcarry << endl;
-    cout << "Z: " << zero << endl;   
+    cout << "Z: " << zero << endl;  
+    cout << "DatamemoryB0[intReg]: " << DatamemoryB0[intReg] << endl;
 
     IP++;
 

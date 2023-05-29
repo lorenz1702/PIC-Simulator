@@ -1,12 +1,12 @@
                     00001           ;TPicSim3
                     00002           ;Programm zum Test des 16F84-Simulators.
-                    00003           ;Es werden die Byte-orientieren File-Register Befehle geprüft
+                    00003           ;Es werden die Byte-orientieren File-Register Befehle geprï¿½ft
                     00004           ;aber kein DECFSZ, INCFSZ, RLF, RRF
                     00005           ;(c) St. Lehmann
                     00006           ;Ersterstellung: 23.03.2016
                     00007           ;Korrekturen: 09.05.2017 (Fehler gefunden durch: Dominik Vogel)
                     00008           ;19.05.2020
-                    00009           ;mod. 18.10.2018 für HSO
+                    00009           ;mod. 18.10.2018 fï¿½r HSO
                     00010           
                     00011           ;Hinweis:
                     00012           ;Bei diesen Befehlen entscheidet das d-Bit (Destination), ob das Ergebnis
@@ -15,13 +15,13 @@
                     00015           ;d-Bit 0 ist und das Ergebnis ins W-Register kommt. Fehlt ",W" ist das 
                     00016           ;d-Bit 1 und das Ergebnis wird ins Fileregister geschrieben.
                     00017           ;
-                    00018           ;Alle Befehle die eine Fileregister-Adresse haben, können auch "indirekt"
+                    00018           ;Alle Befehle die eine Fileregister-Adresse haben, kï¿½nnen auch "indirekt"
                     00019           ;adressieren. Dies ist im Testfile TPicSim6.LST beschrieben.
                     00020           ;
-                    00021           list c=132          ;Zeilenlänge im LST auf 132 Zeichen setzen
+                    00021           list c=132          ;Zeilenlï¿½nge im LST auf 132 Zeichen setzen
                     00022           
                     00023           ;Definition einiger Symbole
-                    00024           ;für den Benutzer frei verwendbare Register
+                    00024           ;fï¿½r den Benutzer frei verwendbare Register
                     00025           wert1    equ 0ch             ;Variable Nr.1
                     00026           wert2    equ 0dh             ;Variable Nr.2
                     00027           ergeb    equ 0eh             ;Variable Nr.3
@@ -35,7 +35,7 @@
 0000 3011           00035           movlw 11h           ;in W steht nun 11h, DC=?, C=?, Z=?
 0001 008C           00036           movwf wert1         ;diesen Wert abspeichern, DC=?, C=?, Z=?
 0002 3014           00037           movlw 14h           ;W = 14h, DC=?, C=?, Z=?
-0003 070C           00038           addwf wert1,w       ;W = 25h, DC=0, C=0, Z=0
+0003 008C           00038           movwf wert1         ;diesen Wert abspeichern, DC=?, C=?, Z=?
 0004 078C           00039           addwf wert1         ;W = 25h, wert1 = 36h, DC=0, C=0, Z=0
 0005 050C           00040           andwf wert1,w       ;W = 24h, wert1 = 36h, DC=0, C=0, Z=0
 0006 008D           00041           movwf wert2         ;W=24h, wert1=36, wert2=24h

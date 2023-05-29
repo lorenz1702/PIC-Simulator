@@ -49,7 +49,7 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
 
         //cout << indexStr << endl;
         //cout << valueStr << endl;
-
+        //until this point everything is correct
         //call execution Method
         int index = stoi(indexStr);
 
