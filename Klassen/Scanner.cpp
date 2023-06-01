@@ -47,11 +47,7 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
         string indexStr = line.substr(0, 4);
         string valueStr = line.substr(5, 4);
 
-        //cout << indexStr << endl;
-        //cout << valueStr << endl;
-        //until this point everything is correct
-        //call execution Method
-        int index = stoi(indexStr);
+        int index = stoi(indexStr, nullptr, 16);
 
         if (index >= 0 && index < 1024) {
                 engine.programmemory[index] = stoi(valueStr, nullptr, 16);

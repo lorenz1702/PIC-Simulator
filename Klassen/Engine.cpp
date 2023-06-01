@@ -173,7 +173,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "ADDWF" << endl;        // Addiere den Inhalt des W-Registers mit dem Inhalt des f-Registers
         intTemp = pCommand & 0x0080; // hol das Destination Bit
         cout << "Destination Bit: " << intTemp << endl;
-        if(intTemp = 128)               // Wenn d = 1
+        if(intTemp == 128)               // Wenn d = 1
         {
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
@@ -189,7 +189,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "ANDWF" << endl;
         intTemp = pCommand & 0x0080; // hol das Destination Bit
         cout << "Destination Bit: " << intTemp << endl;
-        if(intTemp = 128)               // Wenn d = 1
+        if(intTemp == 128)               // Wenn d = 1
         {
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
@@ -219,15 +219,23 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "DECF" << endl;
         intTemp = pCommand & 0x0080; // hol das Destination Bit
         cout << "Destination Bit: " << intTemp << endl;
-        if(intTemp = 128)               // Wenn d = 1
+        if(intTemp == 128)               // Wenn d = 1
         {
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
-            DatamemoryB0[intReg] = DatamemoryB0[intReg] - 1; // schreibs in das Register der aktuellen Bank
+            cout << "DatamemoryB0[intReg] before: " << DatamemoryB0[intReg] << endl;
+            intTemp = DatamemoryB0[intReg] - 1; // schreibs in das Register der aktuellen Bank
+            intTemp = (intTemp == 0) ? 1 :0;
+            if(intTemp == -1){intTemp = 255;}
+            DatamemoryB0[intReg] = intTemp;
+            cout << "DatamemoryB0[intReg] after: " << DatamemoryB0[intReg] << endl;
         } else 
         {
             intReg = pCommand & 0x007f;
-            W = DatamemoryB0[intReg] - 1; // wenn es 0 ist, schreib das Ergebnis in W Register
+            intTemp = DatamemoryB0[intReg] - 1; // schreibs in das Register der aktuellen Bank
+            intTemp = (intTemp == 0) ? 1 :0;
+            if(intTemp == -1){intTemp = 255;}
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         break;
         case 0x0B00 ... 0x0Bff:
@@ -235,18 +243,53 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x0A00 ... 0x0Aff:
         cout << "INCF" << endl;
+        intReg = pCommand & 0x007f;
+        intTemp = DatamemoryB0[intReg] + 1; // schreibs in das Register der aktuellen Bank
+        if(intTemp == 256){intTemp = 0;}
+        intTemp = (intTemp == 0) ? 1 :0;
+        DatamemoryB0[intReg] = intTemp;
         break;
         case 0x0F00 ... 0x0Fff:
         cout << "INCFSZ" << endl;
         break;
         case 0x0400 ... 0x04ff:
         cout << "IORWF" << endl;
-
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            intTemp = DatamemoryB0[intReg] | valueW; // schreibs in das Register der aktuellen Bank
+            intTemp = (intTemp == 0) ? 1 :0;
+            DatamemoryB0[intReg] = intTemp;
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = DatamemoryB0[intReg] | valueW;; // schreibs in das Register der aktuellen Bank
+            intTemp = (intTemp == 0) ? 1 :0;
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
         break;
         case 0x0800 ... 0x08ff:
         cout << "MOVF" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            intTemp = DatamemoryB0[intReg]; // schreibs in das Register der aktuellen Bank
+            intTemp = (intTemp == 0) ? 1 :0;
+            DatamemoryB0[intReg] = intTemp;
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = DatamemoryB0[intReg]; // schreibs in das Register der aktuellen Bank
+            intTemp = (intTemp == 0) ? 1 :0;
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
         break;
-
         case 0x0D00 ... 0x0Dff:
         cout << "RLF" << endl;
         break;
@@ -255,12 +298,68 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x0200 ... 0x02ff:
         cout << "SUBWF" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            intTemp = ~valueW + 1;
+            intTemp = DatamemoryB0[intReg] + intTemp; // schreibs in das Register der aktuellen Bank
+            carry = (result >= 0) ? 1 : 0;
+            if(intTemp == 0){zero = 1; carry = 1;}
+            DatamemoryB0[intReg] = intTemp;
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = ~valueW + 1;
+            intTemp = DatamemoryB0[intReg] + intTemp; // schreibs in das Register der aktuellen Bank
+            carry = (result >= 0) ? 1 : 0;
+            if(intTemp == 0){zero = 1; carry = 1;}
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
+
         break;
         case 0x0E00 ... 0x0Eff:
         cout << "SWAPF" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            unsigned int upperNibble = (DatamemoryB0[intReg] & 0xFFFFFFF0) >> 4;  // Extract and shift upper nibble
+            unsigned int lowerNibble = (DatamemoryB0[intReg] & 0x0000000F) << 4;  // Extract and shift lower nibble
+            intTemp = upperNibble | lowerNibble;  // Swap and combine nibbles
+            DatamemoryB0[intReg] = intTemp;
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            unsigned int upperNibble = (DatamemoryB0[intReg] & 0xFFFFFFF0) >> 4;  // Extract and shift upper nibble
+            unsigned int lowerNibble = (DatamemoryB0[intReg] & 0x0000000F) << 4;  // Extract and shift lower nibble
+            intTemp = upperNibble | lowerNibble;  // Swap and combine nibbles
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
+        cout << "DatamemoryB0[intReg]: "<< DatamemoryB0[intReg] <<endl;
         break;
         case 0x0600 ... 0x06ff:
         cout << "XORWF" << endl;
+
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+
+            intTemp = DatamemoryB0[intReg] ^ valueW;
+
+            DatamemoryB0[intReg] = intTemp;
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = DatamemoryB0[intReg] ^ valueW;
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
+        cout << "DatamemoryB0[intReg]: "<< DatamemoryB0[intReg] <<endl;
         break;
         case 0x1000 ... 0x13ff:
         cout << "BCF" << endl;
@@ -326,7 +425,6 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "MOVLW" << endl;
         intTemp = pCommand & 0x00ff;
         W = intTemp;
-        cout << "W: " << W << endl; 
         break;
         case 0x3C00 ... 0x3Cff:
         cout << "SUBLW" << endl;
@@ -353,7 +451,6 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     cout << "C: " << carry << endl;
     cout << "DC: " << Dcarry << endl;
     cout << "Z: " << zero << endl;  
-    cout << "DatamemoryB0[intReg]: " << DatamemoryB0[intReg] << endl;
 
     IP++;
 

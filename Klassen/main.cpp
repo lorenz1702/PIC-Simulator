@@ -29,7 +29,7 @@ int main()
     scanner.putcommandsinprogrammemory(engine);
     engine.controlCommand();
 
-    for (int i = 0; i < 10; i++) 
+    for (int i = 0; i < 15; i++) 
     {
 
         cout << "Wert Programmemory an der Stelle " << i << ": " << engine.programmemory[i] << endl;

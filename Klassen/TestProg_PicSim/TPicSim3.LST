@@ -35,7 +35,7 @@
 0000 3011           00035           movlw 11h           ;in W steht nun 11h, DC=?, C=?, Z=?
 0001 008C           00036           movwf wert1         ;diesen Wert abspeichern, DC=?, C=?, Z=?
 0002 3014           00037           movlw 14h           ;W = 14h, DC=?, C=?, Z=?
-0003 008C           00038           movwf wert1         ;diesen Wert abspeichern, DC=?, C=?, Z=?
+0003 070C           00038           addwf wert1,w       ;W = 25h, DC=0, C=0, Z=0
 0004 078C           00039           addwf wert1         ;W = 25h, wert1 = 36h, DC=0, C=0, Z=0
 0005 050C           00040           andwf wert1,w       ;W = 24h, wert1 = 36h, DC=0, C=0, Z=0
 0006 008D           00041           movwf wert2         ;W=24h, wert1=36, wert2=24h
