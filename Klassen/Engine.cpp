@@ -134,6 +134,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     {
         case 0x0100:
         cout << "CLRW" << endl;
+        W = 0;
+        zero = 1;
         break;
         case 0x0000:
         cout << "NOP" << endl;
@@ -225,7 +227,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
             cout << "DatamemoryB0[intReg] before: " << DatamemoryB0[intReg] << endl;
             intTemp = DatamemoryB0[intReg] - 1; // schreibs in das Register der aktuellen Bank
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
             if(intTemp == -1){intTemp = 255;}
             DatamemoryB0[intReg] = intTemp;
             cout << "DatamemoryB0[intReg] after: " << DatamemoryB0[intReg] << endl;
@@ -240,6 +242,28 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x0B00 ... 0x0Bff:
         cout << "DECFSZ" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            intTemp = DatamemoryB0[intReg] - 1; // schreibs in das Register der aktuellen Bank
+            zero = (intTemp == 0) ? 1 : 0;
+            if(intTemp == 0){IP++;}
+            if(intTemp == -1){intTemp = 255;}
+            DatamemoryB0[intReg] = intTemp;
+            
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            intTemp = DatamemoryB0[intReg] - 1; // schreibs in das Register der aktuellen Bank
+            zero = (intTemp == 0) ? 1 : 0;
+            if(intTemp == 0){IP++;}
+            if(intTemp == -1){intTemp = 255;}
+            DatamemoryB0[intReg] = intTemp;
+        }
         break;
         case 0x0A00 ... 0x0Aff:
         cout << "INCF" << endl;
@@ -251,6 +275,22 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x0F00 ... 0x0Fff:
         cout << "INCFSZ" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+        intReg = pCommand & 0x007f;
+        intTemp = DatamemoryB0[intReg] + 1; // schreibs in das Register der aktuellen Bank
+        if(intTemp == 256){intTemp = 0; IP++;}
+        intTemp = (intTemp == 0) ? 1 :0;
+        DatamemoryB0[intReg] = intTemp;
+        } else {
+        intReg = pCommand & 0x007f;
+        intTemp = DatamemoryB0[intReg] + 1; // schreibs in das Register der aktuellen Bank
+        if(intTemp == 256){intTemp = 0; IP++;}
+        intTemp = (intTemp == 0) ? 1 :0;
+        DatamemoryB0[intReg] = intTemp;
+        }
         break;
         case 0x0400 ... 0x04ff:
         cout << "IORWF" << endl;
@@ -292,9 +332,41 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x0D00 ... 0x0Dff:
         cout << "RLF" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = (DatamemoryB0[intReg]<<1) | carry; //schreibs in das Register der aktuellen Bank
+            carry = (DatamemoryB0[intReg] & 0x80000000) >> 31;
+            DatamemoryB0[intReg] = intTemp;
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = (DatamemoryB0[intReg]<<1) | carry; //schreibs in das Register der aktuellen Bank
+            carry = (DatamemoryB0[intReg] & 0x80000000) >> 31;
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
+        cout << "DatamemoryB0[intReg]: " << DatamemoryB0[intReg] << endl;
         break;
         case 0x0C00 ... 0x0Cff:
         cout << "RRF" << endl;
+        intTemp = pCommand & 0x0080; // hol das Destination Bit
+        cout << "Destination Bit: " << intTemp << endl;
+        if(intTemp == 128)               // Wenn d = 1
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = (DatamemoryB0[intReg] >> 1) | (carry << 31); //schreibs in das Register der aktuellen Bank
+            carry = DatamemoryB0[intReg] & 1;
+            DatamemoryB0[intReg] = intTemp;
+        } else 
+        {
+            intReg = pCommand & 0x007f;
+            intTemp = (DatamemoryB0[intReg] >> 1) | (carry << 31); //schreibs in das Register der aktuellen Bank
+            carry = DatamemoryB0[intReg] & 1;
+            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+        }
+        cout << "DatamemoryB0[intReg]: " << DatamemoryB0[intReg] << endl;
         break;
         case 0x0200 ... 0x02ff:
         cout << "SUBWF" << endl;
@@ -388,9 +460,18 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x1400 ... 0x17ff:
         cout << "BSF" << endl;
+        intBit = pCommand & 0x0380; // Maske für die b's
+        intReg = pCommand & 0x007f; // Maske für das Register
+        intTemp = 1 << intBit;
+        DatamemoryB0[intReg] = DatamemoryB0[intReg] | intTemp;
         break;
         case 0x1800 ... 0x1Bff:
         cout << "BTFSC" << endl;
+        intBit = pCommand & 0x0380; // Maske für die b's
+        intReg = pCommand & 0x007f; // Maske für das Register
+        intTemp = 1 << intBit;
+        intTemp = (DatamemoryB0[intReg] & intTemp) >> intBit;
+        if(intTemp == 0){IP++;}
         break;
         case 0x1C00 ... 0x1Fff:
         cout << "BTFSS" << endl;
@@ -400,6 +481,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x2800 ... 0x2Fff:
         cout << "GOTO" << endl;
+        intReg = pCommand & 0x07ff;
+        IP = intReg;
         break;
         case 0x3E00 ... 0x3Eff:
         cout << "ADDLW" << endl;
