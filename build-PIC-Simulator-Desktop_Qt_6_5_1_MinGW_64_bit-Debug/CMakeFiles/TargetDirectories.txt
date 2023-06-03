@@ -1,0 +1,9 @@
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/PIC-Simulator.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/install.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/PIC-Simulator_autogen_timestamp_deps.dir
+C:/Users/sarah/OneDrive/Dokumente/Qt/build-PIC-Simulator-Desktop_Qt_6_5_1_MinGW_64_bit-Debug/CMakeFiles/PIC-Simulator_autogen.dir
