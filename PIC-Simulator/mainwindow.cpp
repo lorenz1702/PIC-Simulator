@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <QFileDialog>
+
 #include <QMessageBox>
-#include <QTextStream>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -21,12 +21,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionDatei_ffnen_triggered()
 {
-    QString filename=QFileDialog::getOpenFileName(
-        this,
-        tr("Open File"),
-        "C://",
-        "LST files (*.LST)"
-        );
+
 
 
     /*
@@ -40,16 +35,6 @@ void MainWindow::on_actionDatei_ffnen_triggered()
     };
     QFileDialog::getOpenFileContent("LST files (*.LST)",  fileContentReady);
 */
-
-
-    QFile lstfile(filename);
-    if(!lstfile.open(QIODevice::ReadOnly))
-        QMessageBox::information(0,"info",lstfile.errorString());
-
-    QTextStream in(&lstfile);
-
-    ui->displayfile->setText(in.readAll());
-
 
 
 
