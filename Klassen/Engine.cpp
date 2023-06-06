@@ -128,7 +128,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     
     cout << "pCommand:" << pCommand << endl;
     int valueW, intTemp, intBit, intReg, result;
-    valueW = W;                                 //valueW stores value in W register
+    valueW = W;      
+    IP++;                           //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
     {
@@ -146,8 +147,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         case 0x0009:
         cout << "RETFIE" << endl;
         break;
-        case 0x0068:
+        case 0x0008:
         cout << "RETURN" << endl;
+        IP = IPTemp;
         break;
         case 0x0063:
         cout << "SLEEP" << endl;
@@ -488,6 +490,10 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x2000 ... 0x27ff:
         cout << "CALL" << endl;
+        IPTemp = IP + 1;
+        intReg = pCommand & 0x07ff;
+        cout << "intReg: " << intReg << endl;
+        IP = intReg;
         break;
         case 0x2800 ... 0x2Fff:
         cout << "GOTO" << endl;
@@ -531,6 +537,13 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         if (W > 0){carry == 1; zero == 0;}
         
         break;
+        case 0x3400 ... 0x37ff:
+        cout << "RETLW" << endl;
+        intTemp = pCommand & 0x00ff;
+        W = intTemp;
+        
+        IP = IPTemp;
+        break;
         case 0x3A00 ... 0x3Aff:
         cout << "XORLW" << endl;
         intTemp = pCommand & 0x00ff;
@@ -544,8 +557,10 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     cout << "C: " << carry << endl;
     cout << "DC: " << Dcarry << endl;
     cout << "Z: " << zero << endl;  
+    cout << "IPTemp: " << IPTemp << endl;
 
-    IP++;
+    
+    
 
     if(programmemory[IP] != 0)
     {

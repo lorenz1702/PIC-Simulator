@@ -26,6 +26,7 @@ class Engine
     int zero, carry, Dcarry;
     int W;
     int IP;
+    int IPTemp;
 
 
 } ;
