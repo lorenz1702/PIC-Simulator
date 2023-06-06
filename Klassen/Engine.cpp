@@ -128,7 +128,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     
     cout << "pCommand:" << pCommand << endl;
     int valueW, intTemp, intBit, intReg, result;
-    valueW = W;      
+    valueW = W;
+    DatamemoryB0[2] = IP;
     IP++;                           //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
@@ -553,13 +554,15 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
     }
 
+
+
     cout << "W: " << W << endl; 
     cout << "C: " << carry << endl;
     cout << "DC: " << Dcarry << endl;
     cout << "Z: " << zero << endl;  
     cout << "IPTemp: " << IPTemp << endl;
 
-    
+    if(intReg == 2 || intReg == 130){IP = DatamemoryB0[intReg]; cout << "DatamemoryB0[intReg]: "<< DatamemoryB0[intReg] << endl;}
     
 
     if(programmemory[IP] != 0)
