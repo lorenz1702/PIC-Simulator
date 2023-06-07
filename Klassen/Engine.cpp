@@ -130,6 +130,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     int valueW, intTemp, intBit, intReg, result;
     valueW = W;
     DatamemoryB0[2] = IP;
+    DatamemoryB0[130] = IP;
+    DatamemoryB0[10]= (IP >> 8) & 0xFF;
+    DatamemoryB0[138]= (IP >> 8) & 0xFF;
     IP++;                           //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
@@ -563,7 +566,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     cout << "IPTemp: " << IPTemp << endl;
 
     if(intReg == 2 || intReg == 130){IP = DatamemoryB0[intReg]; cout << "DatamemoryB0[intReg]: "<< DatamemoryB0[intReg] << endl;}
-    
+    if(intReg == 10 || intReg == 138){IP = (DatamemoryB0[10] << 8) | DatamemoryB0[2];}
 
     if(programmemory[IP] != 0)
     {
