@@ -23,7 +23,7 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
     
     //FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.txt", "r");
     //ifstream inputFile("TestProg_PicSim/TPicSim1.txt");
-    ifstream file("TestProg_PicSim/TPicSim10.LST");
+    ifstream file("TestProg_PicSim/TPicSim1.LST");
     
     if (!file.is_open())                                        //error handling
     {
