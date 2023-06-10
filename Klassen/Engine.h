@@ -25,7 +25,6 @@ class Engine
     void executeCommand(int pCommand);
     int add(int pX, int pY);
     int Datamemory[2][128];
-    int DatamemoryB1[128];
     int PORTA,PORTB,TRISA,TRISB,FSR,TMR0,OPTION,PCL,STATUS,EEDATA,EEADR,EECON1,EECON2,PCLATH,INTCON;
     int zero, carry, Dcarry;
     int W;

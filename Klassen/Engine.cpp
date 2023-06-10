@@ -45,7 +45,7 @@ int Engine::CheckForInterrupt()
     int T0IE = (Datamemory[RP0][11] >> 5) & 0x01;
     int T0IF = (Datamemory[RP0][11] >> 2) & 0x01;
     int RBIE = (Datamemory[RP0][11] >> 3) & 0x01;
-    int RBx = ((Datamemory[0][6] >> 4) & 0x0F);
+    int RBx = ((Datamemory[0][6] >> 4) & 0x0F) != 0;
     cout << "RBx: " << RBx << endl;
     
 
@@ -53,7 +53,6 @@ int Engine::CheckForInterrupt()
         if(INTE == 1 && RB0 == 1){Interrupt();}
         if(RBIE == 1 && RBx == 1 ){Interrupt();}
         if(T0IE == 1 && T0IF == 1){Interrupt();}
-
     }
     return 0;
 }
@@ -73,7 +72,12 @@ Engine::Engine() // Engine constructor
     {
         this->programmemory[i] = 0;
     }
-
+    for(int j = 0; j <= 1; j++){
+    for(int i = 0; i < 128; i++)
+    {
+        this->Datamemory[j][i] = 0;
+    }
+    }
     //initialize speciel registers
     PORTA = 5;
     PORTB = 6;
@@ -521,7 +525,6 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         if(Datamemory[RP0][3] >= 32) // Wenn das RP0 Bit des Status Registers der Bank 0 gesetzt ist
         {
             Datamemory[RP0][intReg] = intBit; // Änder den Wert in der Bank 1 (wird nochmal geändert werden müssen, da Funktion ausgelagert wird)
-            cout << "DatamemoryB1: " << DatamemoryB1[intReg] << endl;
         } else 
         {
             Datamemory[RP0][intReg] = intBit;  // Wenn RP0 =  0 ist, dann ändere den Wert auf der Bank 0
