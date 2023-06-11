@@ -27,6 +27,10 @@ private slots:
 
     void on_step_in_button_clicked();
 
+    void on_step_out_button_clicked();
+
+    void on_reset_button_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
