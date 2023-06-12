@@ -18,7 +18,7 @@ void Engine::RegisterHandlerBefore()
     //STATUS and Bank Managment
     statusTemp = Datamemory[RP0][3] & 0x07;
     //INTCON Interrupt GIE
-    GIE = (Datamemory[RP0][11] >> 7) & 0x01;
+    GIE = ((Datamemory[1][11] >> 7) & 0x01)==1|((Datamemory[0][11] >> 7) & 0x01)==1;
 
 
 
@@ -35,7 +35,19 @@ void Engine::RegisterHandlerAfter()
         carry = Datamemory[RP0][3] & 0x01;
         zero = (Datamemory[RP0][3] >> 2) & 0x01;}
     //INTCON Interrupt GIE 
-    Datamemory[RP0][11] = Datamemory[RP0][11] | (GIE << 7);
+    /*
+    Datamemory[RP0][11] = Datamemory[RP0][11] & 0x7f;
+    Datamemory[RP0][11] = Datamemory[0][11] & 0x7f;
+    Datamemory[RP0][11] = Datamemory[0][11] | (GIE << 7);
+    Datamemory[RP0][11] = Datamemory[1][11] | (GIE << 7);
+    */
+
+
+    //TMR0
+    T0CS = (Datamemory[1][1] >> 4) & 0x01;
+    if(T0CS == 0){Datamemory[0][1]++;}
+
+    if(Datamemory[0][1] == 255){Datamemory[0][1]=0; Datamemory[RP0][11] = Datamemory[RP0][11] | (1 << 2);}
 }
 
 int Engine::CheckForInterrupt()
@@ -47,6 +59,11 @@ int Engine::CheckForInterrupt()
     int RBIE = (Datamemory[RP0][11] >> 3) & 0x01;
     int RBx = ((Datamemory[0][6] >> 4) & 0x0F) != 0;
     cout << "RBx: " << RBx << endl;
+    cout << "T0IF: " << T0IF << endl;
+    cout << "T0IE: " << T0IE << endl;
+    cout << "GIE: " << GIE << endl;
+    cout << "IP: "<< IP <<endl;
+
     
 
     if(GIE == 1){
@@ -54,14 +71,18 @@ int Engine::CheckForInterrupt()
         if(RBIE == 1 && RBx == 1 ){Interrupt();}
         if(T0IE == 1 && T0IF == 1){Interrupt();}
     }
+    
     return 0;
 }
 
 int Engine::Interrupt()
 {
     IPTemp = IP;
+
     IP = 4;
-    GIE = 0;
+    Datamemory[0][11] = Datamemory[0][11] & 0x7f;
+    Datamemory[1][11] = Datamemory[1][11] & 0x7f;
+    cout << "Interrupt at IP: "<< IPTemp << endl;
     return 0;
 }
 
@@ -193,8 +214,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     valueW = W;
 
     RegisterHandlerBefore();
-
-    IP++;                           //valueW stores value in W register
+    cout << "Timer: " << Datamemory[0][1]<< endl;
+    Sleep(50);
+    IP++;           //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
     {
@@ -211,7 +233,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
         case 0x0009:
         cout << "RETFIE" << endl;
-        GIE = 1;
+        Datamemory[RP0][11] = Datamemory[0][11] | (1 << 7);
+        Datamemory[RP0][11] = Datamemory[1][11] | (1 << 7);
         IP = IPTemp;
         break;
         case 0x0008:
@@ -535,6 +558,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "BSF" << endl;
         intBit = pCommand & 0x0380; // Maske für die b's
         intReg = pCommand & 0x007f; // Maske für das Register
+        intBit = intBit >> 7;
         intTemp = 1 << intBit;
         Datamemory[RP0][intReg] = Datamemory[RP0][intReg] | intTemp;
         break;
@@ -542,6 +566,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "BTFSC" << endl;
         intBit = pCommand & 0x0380; // Maske für die b's
         intReg = pCommand & 0x007f; // Maske für das Register
+        intBit = intBit >> 7;
         intTemp = 1 << intBit;
         intTemp = (Datamemory[RP0][intReg] & intTemp) >> intBit;
         if(intTemp == 0){IP++;}
@@ -550,6 +575,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "BTFSS" << endl;
         intBit = pCommand & 0x0380; // Maske für die b's
         intReg = pCommand & 0x007f; // Maske für das Register
+        intBit = intBit >> 7;
         intTemp = 1 << intBit;
         intTemp = (Datamemory[RP0][intReg] & intTemp) >> intBit;
         if(intTemp == 1){IP++;}
@@ -564,7 +590,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         case 0x2800 ... 0x2Fff:
         cout << "GOTO" << endl;
         intReg = pCommand & 0x07ff;
-        IPTemp = IP + 1;
+        //IPTemp = IP + 1;
         IP = intReg;
         break;
         case 0x3E00 ... 0x3Eff:
@@ -599,9 +625,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         W = add(intTemp,valueW);
         cout << "W: " << W << endl; 
         
-        if (W <= 0){carry == 0;zero == 0;}
-        if (W == 0)zero == 1;
-        if (W > 0){carry == 1; zero == 0;}
+        if (W <= 0){carry = 0;zero = 0;}
+        if (W == 0)zero = 1;
+        if (W > 0){carry = 1; zero = 0;}
         
         break;
         case 0x3400 ... 0x37ff:

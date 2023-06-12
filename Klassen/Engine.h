@@ -30,7 +30,7 @@ class Engine
     int W;
     int IP;
     int IPTemp;
-    int RP0, GIE, statusTemp;
+    int RP0, GIE, statusTemp, T0CS;
     int intReg;
 
 
