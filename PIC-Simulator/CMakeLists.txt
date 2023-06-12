@@ -17,6 +17,12 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        Scanner.h
+        Scanner.cpp
+        DataStorage.cpp
+        DataStorage.h
+        Engine.cpp
+        Engine.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
