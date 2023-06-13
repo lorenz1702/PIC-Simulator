@@ -215,7 +215,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
 
     RegisterHandlerBefore();
     cout << "Timer: " << Datamemory[0][1]<< endl;
-    Sleep(50);
+    //Sleep(50);
     IP++;           //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
@@ -658,13 +658,13 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     RegisterHandlerAfter();
 
     CheckForInterrupt();
-
+    /*
     if(programmemory[IP] != 0)
     {
         
         controlCommand();
     }
-    
+    */
 }
 
 int Engine::add(int pX, int pY)
