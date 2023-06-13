@@ -24,13 +24,9 @@ int main(int argc, char *argv[])
     // connect putcommandsinprogrammemory with signal from mainwindow
     QObject::connect(&w, &MainWindow::fileProcessed, [&scanner, &engine, &w]() {
         scanner.putcommandsinprogrammemory(engine, w.filename.toStdString());
-        engine.controlCommand();
     });
 
-
-    for (int i = 0; i < 15; i++) {
-        cout << "Wert Programmemory an der Stelle " << i << ": " << engine.programmemory[i] << endl;
-    }
+    QObject::connect(&w, &MainWindow::nextCommand, &engine, &Engine::controlCommand);
 
     w.show();
     return a.exec();

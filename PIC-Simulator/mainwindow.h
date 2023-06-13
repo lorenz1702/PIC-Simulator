@@ -18,11 +18,16 @@ public:
 
 signals:
     void fileProcessed();
+    void nextCommand();
 
 private slots:
     void on_open_file_triggered();
-    void markNextLine();
+    void markNextLine(std::string pcurrentIndex);
     void clearMarkedLine();
+    void handleCursorPositionChanged();
+    void addBreakpoint(int plineNumber);
+    void removeBreakpoint(int plineNumber);
+    bool hasBreakpoint(int lineNumber) const;
     void on_start_button_clicked();
 
     void on_step_in_button_clicked();
@@ -33,5 +38,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    std::string currentIndex;
+    QSet<int> breakpoints;
 };
 #endif // MAINWINDOW_H

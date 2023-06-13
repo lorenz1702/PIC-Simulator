@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QTextBlock>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setStyleSheet("QMainWindow { background-color: rgba(50, 62, 98, 255); }");
+    currentIndex = "0000 ";
+
+    connect(ui->displayfile, &QTextBrowser::cursorPositionChanged, this, &MainWindow::handleCursorPositionChanged);
 
 }
 
@@ -45,44 +49,62 @@ void MainWindow::on_open_file_triggered()
     QFont font = (QFont("Source Code Pro", 9, QFont::Normal));
     ui->displayfile->setFont(font);
     ui->displayfile->setText(in.readAll());
-    //trigger signal for scanner
-    emit fileProcessed();
+
+    breakpoints = QSet<int>();
 
 }
 
 
 void MainWindow::on_start_button_clicked()
 {
-    markNextLine();
+    //trigger signal for scanner
+    emit fileProcessed();
 }
 
-void MainWindow::markNextLine()
+void MainWindow::markNextLine(std::string pcurrentIndex)
 {
     int currentLine = ui->displayfile->textCursor().blockNumber();
     int lineCount = ui->displayfile->document()->blockCount();
     if (currentLine >= 0 && currentLine < lineCount)
     {
-        // clear mark from previous line
+        // Clear mark from previous line
         clearMarkedLine();
-        // mark current block
-        QTextBlock currentBlock = ui->displayfile->document()->findBlockByLineNumber(currentLine);
-        QTextCursor cursor(currentBlock);
-        cursor.select(QTextCursor::LineUnderCursor);
-        // change background color to yellow
-        QTextCharFormat format;
-        format.setBackground(QColor(Qt::yellow));
-        cursor.mergeCharFormat(format);
-        cursor.clearSelection();
-        cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
-        cursor.mergeCharFormat(format);
-        // go to next line
-        if (currentBlock.next().isValid())
+
+        // Mark next line that starts with "000x" followed by a space
+        for (int i = currentLine + 1; i < lineCount; i++)
         {
-            QTextBlock nextBlock = currentBlock.next();
-            QTextCursor nextCursor(nextBlock);
-            ui->displayfile->setTextCursor(nextCursor);
+            QTextBlock block = ui->displayfile->document()->findBlockByLineNumber(i);
+            QString lineText = block.text().trimmed();
+
+            if (lineText.startsWith(QString::fromUtf8(currentIndex.c_str())) && lineText.length() > 5)
+            {
+                QTextCursor cursor(block);
+                cursor.select(QTextCursor::LineUnderCursor);
+
+                // Change background color to yellow
+                QTextCharFormat format;
+                format.setBackground(QColor(Qt::yellow));
+                cursor.mergeCharFormat(format);
+
+                int tempcurrentIndex;
+                std::istringstream iss(pcurrentIndex);
+                iss >> std::hex >> tempcurrentIndex;
+
+                // Inkrementiere die Zahl
+                tempcurrentIndex++;
+
+                // Wandle die Zahl zurück in einen String um
+                std::ostringstream oss;
+                    oss << std::setw(4) << std::setfill('0') << std::hex << std::uppercase << tempcurrentIndex;
+                currentIndex = oss.str();
+
+                // Füge das Leerzeichen am Ende hinzu
+                currentIndex += " ";
+                break;  // Stop marking after finding the first matching line
+            }
         }
     }
+
 }
 
 void MainWindow::clearMarkedLine()
@@ -102,15 +124,72 @@ void MainWindow::clearMarkedLine()
     }
 }
 
-
-
-void MainWindow::on_step_in_button_clicked()
+void MainWindow::handleCursorPositionChanged()
 {
-    //
+    QTextCursor cursor = ui->displayfile->textCursor();
+    int lineNumber = cursor.blockNumber();
+
+    // Wenn die Zeile bereits einen Breakpoint hat, entferne ihn
+    if (hasBreakpoint(lineNumber))
+    {
+        removeBreakpoint(lineNumber);
+    }
+    else
+    {
+        // Sonst füge einen Breakpoint hinzu
+        QString lineText = cursor.block().text().trimmed();
+
+        QRegularExpression regex("^\\d{4}\\s");
+        if (regex.match(lineText).hasMatch())
+        {
+            addBreakpoint(lineNumber);
+        }
+    }
 }
 
 
 
+void MainWindow::addBreakpoint(int plineNumber)
+{
+    QTextBlock block = ui->displayfile->document()->findBlockByLineNumber(plineNumber);
+    QTextCursor cursor(block);
+    cursor.select(QTextCursor::LineUnderCursor);
+
+    // Change background color to indicate the breakpoint
+    QTextCharFormat format;
+    format.setBackground(QColor(Qt::red));
+    cursor.mergeCharFormat(format);
+}
+
+void MainWindow::removeBreakpoint(int plineNumber)
+{
+    QTextBlock block = ui->displayfile->document()->findBlockByLineNumber(plineNumber);
+    QTextCursor cursor(block);
+    cursor.select(QTextCursor::LineUnderCursor);
+
+    // Change background color back to the default
+    QTextCharFormat format;
+    format.setBackground(QColor(Qt::white));
+    cursor.mergeCharFormat(format);
+}
+
+bool MainWindow::hasBreakpoint(int plineNumber) const
+{
+    QTextBlock block = ui->displayfile->document()->findBlockByLineNumber(plineNumber);
+    QTextCursor cursor(block);
+    cursor.select(QTextCursor::LineUnderCursor);
+
+    QTextCharFormat format = cursor.charFormat();
+    return format.background().color() == Qt::red;
+}
+
+
+void MainWindow::on_step_in_button_clicked()
+{
+    markNextLine(currentIndex);
+    emit nextCommand();
+
+}
 
 void MainWindow::on_step_out_button_clicked()
 {
