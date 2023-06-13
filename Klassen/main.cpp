@@ -1,4 +1,6 @@
-#include "Gui.h"
+#include "mainwindow.h"
+
+#include <QApplication>
 #include "Scanner.h"
 #include "Engine.h"
 
@@ -12,29 +14,20 @@ using namespace std;
 //Programm starten:
 //-> Im Terminal beim Pfad dieses Ordners "Klassen" mingw32-make eingeben
 
-
-int bitwiseAND(int num1, int num2) {
-    int result = num1 & num2;
-    return result;
-}
-int main()
+int main(int argc, char *argv[])
 {
-    //Gui Gui;
-
-
+    QApplication a(argc, argv);
+    MainWindow w;
     Scanner scanner;
-
     Engine engine;
 
-    scanner.putcommandsinprogrammemory(engine);
-    engine.controlCommand();
+    // connect putcommandsinprogrammemory with signal from mainwindow
+    QObject::connect(&w, &MainWindow::fileProcessed, [&scanner, &engine, &w]() {
+        scanner.putcommandsinprogrammemory(engine, w.filename.toStdString());
+    });
 
-    for (int i = 0; i < 15; i++) 
-    {
+    QObject::connect(&w, &MainWindow::nextCommand, &engine, &Engine::controlCommand);
 
-        cout << "Wert Programmemory an der Stelle " << i << ": " << engine.programmemory[i] << endl;
-    }
-    
-
-    
+    w.show();
+    return a.exec();
 }
