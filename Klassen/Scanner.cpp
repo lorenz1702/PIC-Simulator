@@ -18,21 +18,19 @@ Scanner::~Scanner()
 {
 }
 
-int Scanner::putcommandsinprogrammemory(Engine &engine)
+int Scanner::putcommandsinprogrammemory(Engine &engine, std::string lstpath)
 {
     
-    //FILE* inputFile = fopen("TestProg_PicSim/TPicSim1.txt", "r");
-    //ifstream inputFile("TestProg_PicSim/TPicSim1.txt");
-    ifstream file("TestProg_PicSim/TPicSim8.LST");
+    ifstream file(lstpath);
     
     if (!file.is_open())                                        //error handling
     {
-        cout << "Could not open file " << "TestProg_PicSim/TPicSim8.LST" << endl;
+        cout << "Could not open file " << lstpath << endl;
         return 1;
     }
 
     string line;
-    while (getline(file, line)) 
+    while (getline(file, line))
     {
         // Ignore lines before line 18
         if (line.find("                    ") == 0)
@@ -53,44 +51,15 @@ int Scanner::putcommandsinprogrammemory(Engine &engine)
                 engine.programmemory[index] = stoi(valueStr, nullptr, 16);
             } else {
                 cout << "Index out of range: " << index << endl;
-            } 
-
-        /*
-        printf("indexStr: %s\n",indexStr);
-        printf("value: %s\n",valueStr);
-
-        cout << indexStr << endl;
-        cout << valueStr << endl;
-
-        // Convert index and value to integer
-        
-        
-        try {
-            int index = stoi(indexStr);
-            printf("index convert: %i\n",index);
-            int value = stol(valueStr, nullptr, 16);
-            printf("value convert: %i\n",value);
-
-
-            if (index >= 0 && index < 1024) {
-                engine.programmemory[index] = value;
-            } else {
-                cout << "Index out of range: " << index << endl;
             }
-        } catch (exception& e) {
-            cout << "Error: " << e.what() << endl;
-        }
-        
-    }
-    file.close();
 
-    return 0;
-    */
+
+    }
+    for (int i = 0; i < 30; i++) {
+            cout << "Wert Programmemory an der Stelle " << i << ": " << engine.programmemory[i] << endl;
     }
     return 0;
 }
-
-
 
 /*
     Commands needed:
