@@ -26,11 +26,16 @@ void Engine::RegisterHandlerBefore()
 void Engine::TimerHandler(){
     //TMR0
     T0CS = (Datamemory[1][1] >> 4) & 0x01;
+    int PSA = (Datamemory[1][1] >> 3) & 0x01;
     int PS0 = Datamemory[1][1] & 0x01;
     int PS1 = (Datamemory[1][1] >> 1) & 0x01;
     int PS2 = (Datamemory[1][1] >> 2) & 0x01;
 
-    if(T0CS == 0){
+    if(PSA == 1 && T0CS == 0){
+        Datamemory[0][1]++;
+    }
+
+    if(PSA == 0 && T0CS == 0){
         if(PS0==0&&PS1==0&&PS2==0){
             static int count1 = 0;
             count1++;
@@ -95,9 +100,85 @@ void Engine::TimerHandler(){
                 count = 0;
             }
         }
-
     }
 
+    if(PSA == 0 && WDTE == 1){
+        WDT++;
+    };
+
+    if(PSA == 1 && WDTE == 1){
+        if(PS0==0&&PS1==0&&PS2==0){
+            static int count1 = 0;
+            count1++;
+            if (count1 == 1) {
+                WDT++;
+                count1 = 0;
+            }
+        }
+        if(PS2==0&&PS1==0&&PS0==1){
+            static int count1 = 0;
+            count1++;
+            if (count1 == 2) {
+                WDT++;
+                count1 = 0;
+            }
+        }
+        if(PS2==0&&PS1==1&&PS0==0){
+            static int count2 = 0;
+            count2++;
+            if (count2 == 4) {
+                WDT++;
+                count2 = 0;
+            }
+        }
+        if(PS2==0&&PS1==1&&PS0==1){
+            static int count3 = 0;
+            count3++;
+            if (count3 == 8) {
+                WDT++;
+                count3 = 0;
+            }
+        }
+        if(PS2==1&&PS1==0&&PS0==0){
+            static int count = 0;
+            count++;
+            if (count == 16) {
+                WDT++;
+                count = 0;
+            }
+        }
+        if(PS2==1&&PS1==0&&PS0==1){
+            static int count = 0;
+            count++;
+            if (count == 32) {
+                WDT++;
+                count = 0;
+            }
+        }
+        if(PS2==1&&PS1==1&&PS0==0){
+            static int count = 0;
+            count++;
+            if (count == 64) {
+                WDT++;
+                count = 0;
+            }
+        }
+        if(PS2==1&&PS1==1&&PS0==1){
+            static int count = 0;
+            count++;
+            if (count == 128) {
+                WDT++;
+                count = 0;
+            }
+        }
+        //Überlauf muss noch geprüft werden
+
+    }
+    if(WDT == 255){
+        WDT =0;
+        Datamemory[RP0][3] = Datamemory[RP0][3] & ~(1 << 4);
+
+    }
     if(Datamemory[0][1] == 255){Datamemory[0][1]=0; Datamemory[RP0][11] = Datamemory[RP0][11] | (1 << 2);}
 }
 
@@ -324,6 +405,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
     case 0x0064:
         cout << "CLRWDT" << endl;
+        WDT=0;
+        Datamemory[1][1]= Datamemory[1][1] & ~(0x7);
+        Datamemory[RP0][3]=Datamemory[RP0][3] | 0x18;
         break;
     case 0x0009:
         cout << "RETFIE" << endl;
