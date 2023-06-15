@@ -12,7 +12,8 @@ class Engine : public QObject
     private:
 
     void RegisterHandlerBefore();
-    void RegisterHandlerAfter();
+    void RegisterHandlerAfter(int intReg);
+    void TimerHandler();
     int CheckForInterrupt();
     int Interrupt();
 
@@ -29,8 +30,9 @@ class Engine : public QObject
     int W;
     int IP;
     int IPTemp;
-    int RP0, GIE, statusTemp, T0CS;
-    int intReg;
+    int RP0, GIE, statusTemp, statusTemp1, T0CS;
+    int RunTime;
+
 
 
 } ;
