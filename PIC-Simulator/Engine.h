@@ -32,6 +32,8 @@ class Engine : public QObject
     int IPTemp;
     int RP0, GIE, statusTemp, statusTemp1, T0CS;
     int RunTime;
+    int WDT;
+    int WDTE;
 
 
 
