@@ -9,7 +9,7 @@ class Engine : public QObject
 {
     Q_OBJECT
 
-    private:
+private:
 
     void RegisterHandlerBefore();
     void RegisterHandlerAfter(int intReg);
@@ -17,10 +17,11 @@ class Engine : public QObject
     int CheckForInterrupt();
     int Interrupt();
 
-    public:
+public:
     Engine();
     ~Engine();
     int programmemory[1024]; //oberen 2 Bits sind immer 0, ggf. verunden
+    void initializeEngine();
     void controlCommand();           // Interrupt, IP und Befehl aus Programmemory holen
     void executeCommand(int pCommand);
     int add(int pX, int pY);
@@ -34,8 +35,11 @@ class Engine : public QObject
     int RunTime;
     int WDT;
     int WDTE;
+    int RB0;
 
 
+signals:
+    void valueChanged(int newValue);
 
 } ;
 
