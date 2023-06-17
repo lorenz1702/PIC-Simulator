@@ -21,6 +21,10 @@ void Engine::RegisterHandlerBefore()
     statusTemp = Datamemory[RP0][3] & 0x07;
     //INTCON Interrupt GIE
     GIE = ((Datamemory[1][11] >> 7) & 0x01)==1|((Datamemory[0][11] >> 7) & 0x01)==1;
+
+    //FSR Handler indirect Adress
+    FSR = Datamemory[0][4];
+    Datamemory[0][0] = Datamemory[RB0][FSR];
 }
 
 void Engine::TimerHandler(){
@@ -210,7 +214,7 @@ void Engine::RegisterHandlerAfter(int intReg)
             Datamemory[negRP0][3] = Datamemory[negRP0][3]  | mask;
         }
     }
-    cout << "RP0: "<< RP0 <<endl;
+    //cout << "RP0: "<< RP0 <<endl;
     if (statusTemp != (Datamemory[RP0][3] & 0x07)){// muss eigentlich aufgeteilt werden
         carry = Datamemory[RP0][3] & 0x01;
         zero = (Datamemory[RP0][3] >> 2) & 0x01;}
@@ -230,17 +234,30 @@ void Engine::RegisterHandlerAfter(int intReg)
 int Engine::CheckForInterrupt()
 {
     int INTE = (Datamemory[RP0][11] >> 4) & 0x01;
-    int RB0 = (Datamemory[0][6] & 0x01);
+    //int RB0 = (Datamemory[0][6] & 0x01);
     int T0IE = (Datamemory[RP0][11] >> 5) & 0x01;
     int T0IF = (Datamemory[RP0][11] >> 2) & 0x01;
     int RBIE = (Datamemory[RP0][11] >> 3) & 0x01;
     int RBx = ((Datamemory[0][6] >> 4) & 0x0F) != 0;
+    int INTEDG = (Datamemory[1][1] >> 6) & 0x01;
+
 
     if(GIE == 1){
-        if(INTE == 1 && RB0 == 1){Interrupt();}
+        //if(INTE == 1 && RB0 == 1){Interrupt();}
         if(RBIE == 1 && RBx == 1 ){Interrupt();}
         if(T0IE == 1 && T0IF == 1){Interrupt();}
     }
+
+    if(GIE==1){
+        if(INTE == 1){
+            if(INTEDG == 1){
+                if(RB0 == 0 && (Datamemory[0][PORTB] & 0x01)==1){Datamemory[0][11] = Datamemory[0][11] | (1<<1); Interrupt();}
+            }else{
+                if(RB0 == 1 && (Datamemory[0][PORTB] & 0x01)==0){Datamemory[0][11] = Datamemory[0][11] | (1<<1);Interrupt();}//INTF muss noch gesetzt werden
+            }
+        }
+    }
+    RB0 = (Datamemory[0][PORTB] & 0x01);
 
     return 0;
 }
@@ -269,6 +286,9 @@ Engine::Engine() // Engine constructor
             this->Datamemory[j][i] = 0;
         }
     }
+    Datamemory[0][3]= 0x18;
+    Datamemory[1][1]= 0xFF;
+
     //initialize speciel registers
     PORTA = 5;
     PORTB = 6;
@@ -285,6 +305,10 @@ Engine::Engine() // Engine constructor
     EECON2 = 9;
     PCLATH = 10;
     INTCON = 11;
+
+
+
+
     RP0 = 0;
     RunTime = 0;
 
@@ -292,6 +316,8 @@ Engine::Engine() // Engine constructor
     carry = 0;
     zero = 0;
     Dcarry = 0;
+
+    RB0 = (Datamemory[0][6] & 0x01);
 }
 
 Engine::~Engine()                   //Engine destructor
@@ -398,7 +424,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     case 0x0100:
         cout << "CLRW" << endl;
         W = 0;
-        zero = 1;
+        Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4;
         break;
     case 0x0000:
         cout << "NOP" << endl;
@@ -433,7 +459,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "CLRF" << endl;
         intReg = pCommand & 0x007f;
         Datamemory[RP0][intReg] = 0;
-        zero=1;
+        Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4;
         break;
     }
 
@@ -500,6 +526,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             cout << "Datamemory[RP0][intReg] before: " << Datamemory[RP0][intReg] << endl;
             intTemp = Datamemory[RP0][intReg] - 1; // schreibs in das Register der aktuellen Bank
             zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             if(intTemp == -1){intTemp = 255;}
             Datamemory[RP0][intReg] = intTemp;
             cout << "Datamemory[RP0][intReg] after: " << Datamemory[RP0][intReg] << endl;
@@ -522,6 +549,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
             intTemp = Datamemory[RP0][intReg] - 1; // schreibs in das Register der aktuellen Bank
             zero = (intTemp == 0) ? 1 : 0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             if(intTemp == 0){Datamemory[0][2]++;RunTime++;}
             if(intTemp == -1){intTemp = 255;}
             Datamemory[RP0][intReg] = intTemp;
@@ -532,6 +560,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
             intTemp = Datamemory[RP0][intReg] - 1; // schreibs in das Register der aktuellen Bank
             zero = (intTemp == 0) ? 1 : 0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             if(intTemp == 0){Datamemory[0][2]++;}
             if(intTemp == -1){intTemp = 255;}
             Datamemory[RP0][intReg] = intTemp;
@@ -656,7 +685,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intTemp = ~valueW + 1;
             intTemp = Datamemory[RP0][intReg] + intTemp; // schreibs in das Register der aktuellen Bank
             carry = (result >= 0) ? 1 : 0;
-            if(intTemp == 0){zero = 1; carry = 1;}
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(carry);
+            if(intTemp == 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4; Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1;}
             Datamemory[RP0][intReg] = intTemp;
         } else
         {
@@ -813,9 +843,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         W = add(intTemp,valueW);
         cout << "W: " << W << endl;
 
-        if (W <= 0){carry = 0;zero = 0;}
-        if (W == 0)zero = 1;
-        if (W > 0){carry = 1; zero = 0;}
+        if (W <= 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(5);}// set carry and zero to 0
+        if (W == 0)Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4;
+        if (W > 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1; Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(4);}
 
         break;
     case 0x3400 ... 0x37ff:
@@ -830,18 +860,24 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     case 0x3A00 ... 0x3Aff:
         cout << "XORLW" << endl;
         intTemp = pCommand & 0x00ff;
-        cout << "W vorher: " << W << endl;
         W = intTemp ^ valueW;
-        cout << "W: " << W << endl;
+        if(W > 0){
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(5);}// set carry and zero to 0
+        if(W == 0){
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4;
+        }
+        if(W < 0){
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] | 0x01; Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(4);} // carry to 1 zero to 0
+
         break;
     }
 
 
 
     cout << "W: " << W << endl;
-    //cout << "C: " << carry << endl;
-    //cout << "DC: " << Dcarry << endl;
-    //cout << "Z: " << zero << endl;
+    cout << "C: " << ((Datamemory[RP0][3]) & 0x01) << endl;
+    cout << "DC: " << ((Datamemory[RP0][3] >> 1) & 0x01)<< endl;
+    cout << "Z: " << ((Datamemory[RP0][3] >> 2) & 0x01) << endl;
 
 
 
