@@ -20,7 +20,7 @@ Scanner::~Scanner()
 
 int Scanner::putcommandsinprogrammemory(Engine &engine, std::string lstpath)
 {
-    
+
     ifstream file(lstpath);
     
     if (!file.is_open())                                        //error handling

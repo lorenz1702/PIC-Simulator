@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QTextBrowser>
 #include "Engine.h"
 
 
@@ -29,6 +30,7 @@ public:
     QString filename;
 
     void getEngine(Engine *pEngine);
+
 
 
 
@@ -64,6 +66,7 @@ private:
     QSet<int> breakpoints;  // list of breakpoints
     Engine *engine;         // engine
     double runtime;
+    int lineoffset;
 
     void updateCurrentIndex(int pIP);
     void setDefaultValues();
@@ -71,6 +74,7 @@ private:
     void toggleValue(int pRow, int pColumn);
     void updateTableFromMemory();
     void syncArrayToTable();
+    int findLineNumber(QTextBrowser* textBrowser, const QString& searchText);
 
 };
 #endif // MAINWINDOW_H

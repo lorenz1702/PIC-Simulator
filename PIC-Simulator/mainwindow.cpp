@@ -432,6 +432,14 @@ void MainWindow::on_start_button_clicked()
         ui->runtime_label->setText(QString::number(runtime));
         ui->step_in_button->click();
 
+        int lineNumber = findLineNumber(ui->displayfile, QString::fromStdString(currentIndex));
+        std::cout << "linenumber: " << lineNumber << "currentIndex: " << currentIndex << std::endl;
+        if (hasBreakpoint(lineNumber)) {
+            timer->stop();
+            timer->deleteLater();
+
+        }
+
         if (engine->programmemory[engine->IP + 1] == 0 && engine->programmemory[engine->IP + 2] == 0) {
             timer->stop();
             timer->deleteLater();
@@ -441,6 +449,31 @@ void MainWindow::on_start_button_clicked()
     timer->start(500);
 
 }
+
+int MainWindow::findLineNumber(QTextBrowser* textBrowser, const QString& searchText)
+{
+    QTextDocument* document = textBrowser->document();
+    QTextCursor cursor(document);
+    cursor.movePosition(QTextCursor::Start);
+
+    QRegularExpression regex(QString("^") + QRegularExpression::escape(searchText));
+
+    while (!cursor.atEnd())
+    {
+        cursor.movePosition(QTextCursor::EndOfLine);
+
+        if (regex.match(cursor.block().text()).hasMatch())
+        {
+            return cursor.blockNumber();
+        }
+
+        cursor.movePosition(QTextCursor::NextBlock);
+    }
+
+    return -1;
+}
+
+
 
 void MainWindow::markNextLine(std::string pcurrentIndex)
 {
@@ -566,6 +599,7 @@ bool MainWindow::hasBreakpoint(int plineNumber) const
     cursor.select(QTextCursor::LineUnderCursor);
 
     QTextCharFormat format = cursor.charFormat();
+
     return format.background().color() == Qt::red;
 }
 
