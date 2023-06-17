@@ -517,12 +517,14 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         if(intTemp == 128)               // Wenn d = 1
         {
             intReg = pCommand & 0x007f;
-            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
-            Datamemory[RP0][intReg] = ~Datamemory[RP0][intReg] + ~valueW + 1; // schreibs in das Register der aktuellen Bank
+            unsigned int complement = ~Datamemory[RP0][intReg];
+
+            Datamemory[RP0][intReg] = complement & 0xFF; // schreibs in das Register der aktuellen Bank
         } else
         {
             intReg = pCommand & 0x007f;
-            W = ~Datamemory[RP0][intReg] + ~valueW + 1; // wenn es 0 ist, schreib das Ergebnis in W Register
+            unsigned int complement = ~Datamemory[RP0][intReg];
+            W = complement & 0xFF;// wenn es 0 ist, schreib das Ergebnis in W Register
         }
         break;
     case 0x0300 ... 0x03ff:
@@ -543,10 +545,14 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         } else
         {
             intReg = pCommand & 0x007f;
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            cout << "Datamemory[RP0][intReg] before: " << Datamemory[RP0][intReg] << endl;
             intTemp = Datamemory[RP0][intReg] - 1; // schreibs in das Register der aktuellen Bank
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             if(intTemp == -1){intTemp = 255;}
-            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+            W = intTemp;
+            cout << "W after: " << W << endl;
         }
         break;
     case 0x0B00 ... 0x0Bff:
@@ -581,7 +587,8 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intReg = pCommand & 0x007f;
         intTemp = Datamemory[RP0][intReg] + 1; // schreibs in das Register der aktuellen Bank
         if(intTemp == 256){intTemp = 0;}
-        intTemp = (intTemp == 0) ? 1 :0;
+        zero = (intTemp == 0) ? 1 :0;
+        Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
         Datamemory[RP0][intReg] = intTemp;
         break;
     case 0x0F00 ... 0x0Fff:
@@ -593,13 +600,15 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             intTemp = Datamemory[RP0][intReg] + 1; // schreibs in das Register der aktuellen Bank
             if(intTemp <= 256){intTemp = 0; Datamemory[0][2]++;RunTime++;}
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             Datamemory[RP0][intReg] = intTemp;
         } else {
             intReg = pCommand & 0x007f;
             intTemp = Datamemory[RP0][intReg] + 1; // schreibs in das Register der aktuellen Bank
             if(intTemp <= 256){intTemp = 0; Datamemory[0][2]++;}
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             Datamemory[RP0][intReg] = intTemp;
         }
         break;
@@ -612,13 +621,15 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
             intTemp = Datamemory[RP0][intReg] | valueW; // schreibs in das Register der aktuellen Bank
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             Datamemory[RP0][intReg] = intTemp;
         } else
         {
             intReg = pCommand & 0x007f;
             intTemp = Datamemory[RP0][intReg] | valueW;; // schreibs in das Register der aktuellen Bank
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         break;
@@ -631,13 +642,15 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
             intTemp = Datamemory[RP0][intReg]; // schreibs in das Register der aktuellen Bank
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             Datamemory[RP0][intReg] = intTemp;
         } else
         {
             intReg = pCommand & 0x007f;
             intTemp = Datamemory[RP0][intReg]; // schreibs in das Register der aktuellen Bank
-            intTemp = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         break;
@@ -692,20 +705,29 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         {
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
-            intTemp = ~valueW + 1;
-            intTemp = Datamemory[RP0][intReg] + intTemp; // schreibs in das Register der aktuellen Bank
-            carry = (result >= 0) ? 1 : 0;
+            intTemp = (~valueW + 1) & 0xFF;
+            cout << "Wert2 " << Datamemory[RP0][intReg] << endl;
+            unsigned int complement = (Datamemory[RP0][intReg] + intTemp) & 0xFF; // schreibs in das Register der aktuellen Bank
+            carry = (complement >= 0) ? 1 : 0;
             Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(carry);
-            if(intTemp == 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4; Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1;}
-            Datamemory[RP0][intReg] = intTemp;
+            if(complement == 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4; Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1;}
+            Datamemory[RP0][intReg] = complement;
+            zero = (complement == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
+
         } else
         {
             intReg = pCommand & 0x007f;
-            intTemp = ~valueW + 1;
-            intTemp = Datamemory[RP0][intReg] + intTemp; // schreibs in das Register der aktuellen Bank
-            carry = (result >= 0) ? 1 : 0;
-            if(intTemp == 0){zero = 1; carry = 1;}
-            W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
+            //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
+            intTemp = (~valueW + 1) & 0xFF;
+            cout << "Wert2 " << Datamemory[RP0][intReg] << endl;
+            unsigned int complement = (Datamemory[RP0][intReg] + intTemp) & 0xFF; // schreibs in das Register der aktuellen Bank
+            carry = (complement >= 0) ? 1 : 0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(carry);
+            if(complement == 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4; Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1;}
+            W = complement; // wenn es 0 ist, schreib das Ergebnis in W Register
+            zero = (complement == 0) ? 1 :0;
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(zero << 2);
         }
 
         break;
@@ -735,11 +757,13 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
 
         intTemp = pCommand & 0x0080; // hol das Destination Bit
         cout << "Destination Bit: " << intTemp << endl;
+
         if(intTemp == 128)               // Wenn d = 1
         {
             intReg = pCommand & 0x007f;
 
             intTemp = Datamemory[RP0][intReg] ^ valueW;
+            cout << "Wert1 before: "<< Datamemory[RP0][intReg] <<endl;
 
             Datamemory[RP0][intReg] = intTemp;
         } else
@@ -855,9 +879,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         W = add(intTemp,valueW);
         cout << "W: " << W << endl;
 
-        if (W <= 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(5);}// set carry and zero to 0
+        if (W < 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(7);}// set carry and zero to 0
         if (W == 0)Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4;
-        if (W > 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1; Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(4);}
+        if (W > 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 3; Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(4);}
 
         break;
     case 0x3400 ... 0x37ff:
@@ -875,12 +899,12 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intTemp = pCommand & 0x00ff;
         W = intTemp ^ valueW;
         if(W > 0){
-            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(5);}// set carry and zero to 0
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(7);}// set carry and zero to 0
         if(W == 0){
             Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4;
         }
         if(W < 0){
-            Datamemory[0][STATUS] = Datamemory[0][STATUS] | 0x01; Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(4);} // carry to 1 zero to 0
+            Datamemory[0][STATUS] = Datamemory[0][STATUS] | 0x03; Datamemory[0][STATUS] = Datamemory[0][STATUS] & ~(4);} // carry to 1 zero to 0
 
         break;
     }
