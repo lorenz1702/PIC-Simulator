@@ -325,26 +325,28 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "CLRW" << endl;
         W = 0;
         zero = 1;
-        Datamemory[0][2]++;
+
         break;
     case 0x0000:
         cout << "NOP" << endl;
-        Datamemory[0][2]++;
+
         break;
     case 0x0064:
         cout << "CLRWDT" << endl;
-        Datamemory[0][2]++;
+
         break;
     case 0x0009:
         cout << "RETFIE" << endl;
         Datamemory[RP0][11] = Datamemory[0][11] | (1 << 7);
         Datamemory[RP0][11] = Datamemory[1][11] | (1 << 7);
         Datamemory[0][2] = IPTemp;
+        Datamemory[0][2]--;
         RunTime++;
         break;
     case 0x0008:
         cout << "RETURN" << endl;
         Datamemory[0][2] = IPTemp;
+        Datamemory[0][2]--;
         RunTime++;
         break;
     case 0x0063:
@@ -354,14 +356,14 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "MOVWF" << endl;
         intReg = pCommand & 0x007f;
         Datamemory[RP0][intReg] = valueW;
-        Datamemory[0][2]++;
+
         break;
     case 0x0180 ... 0x01FF:
         cout << "CLRF" << endl;
         intReg = pCommand & 0x007f;
         Datamemory[RP0][intReg] = 0;
         zero=1;
-        Datamemory[0][2]++;
+
         break;
     }
 
@@ -385,7 +387,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             W = Datamemory[RP0][intReg] + valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0500 ... 0x05FF:
         cout << "ANDWF" << endl;
@@ -401,7 +403,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             W = Datamemory[RP0][intReg] & valueW; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0900 ... 0x09ff:
         cout << "COMF" << endl;
@@ -422,7 +424,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             W = ~Datamemory[RP0][intReg] + ~valueW + 1; // wenn es 0 ist, schreib das Ergebnis in W Register
             cout << "nach Komplement: " << ~Datamemory[RP0][intReg] + ~valueW + 1 << endl;
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0300 ... 0x03ff:
         cout << "DECF" << endl;
@@ -446,7 +448,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             if(intTemp == -1){intTemp = 255;}
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0B00 ... 0x0Bff:
         cout << "DECFSZ" << endl;
@@ -472,7 +474,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             if(intTemp == -1){intTemp = 255;}
             Datamemory[RP0][intReg] = intTemp;
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0A00 ... 0x0Aff:
         cout << "INCF" << endl;
@@ -481,7 +483,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         if(intTemp == 256){intTemp = 0;}
         intTemp = (intTemp == 0) ? 1 :0;
         Datamemory[RP0][intReg] = intTemp;
-        Datamemory[0][2]++;
+
         break;
     case 0x0F00 ... 0x0Fff:
         cout << "INCFSZ" << endl;
@@ -501,7 +503,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intTemp = (intTemp == 0) ? 1 :0;
             Datamemory[RP0][intReg] = intTemp;
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0400 ... 0x04ff:
         cout << "IORWF" << endl;
@@ -521,7 +523,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intTemp = (intTemp == 0) ? 1 :0;
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0800 ... 0x08ff:
         cout << "MOVF" << endl;
@@ -541,7 +543,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intTemp = (intTemp == 0) ? 1 :0;
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0D00 ... 0x0Dff:
         cout << "RLF" << endl;
@@ -564,7 +566,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         cout << "Datamemory[RP0][intReg]: " << Datamemory[RP0][intReg] << endl;
-        Datamemory[0][2]++;
+
         break;
     case 0x0C00 ... 0x0Cff:
         cout << "RRF" << endl;
@@ -586,7 +588,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         cout << "Datamemory[RP0][intReg]: " << Datamemory[RP0][intReg] << endl;
-        Datamemory[0][2]++;
+
         break;
     case 0x0200 ... 0x02ff:
         cout << "SUBWF" << endl;
@@ -610,7 +612,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             if(intTemp == 0){zero = 1; carry = 1;}
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x0E00 ... 0x0Eff:
         cout << "SWAPF" << endl;
@@ -632,7 +634,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         cout << "Datamemory[RP0][intReg]: "<< Datamemory[RP0][intReg] <<endl;
-        Datamemory[0][2]++;
+
         break;
     case 0x0600 ... 0x06ff:
         cout << "XORWF" << endl;
@@ -653,7 +655,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             W = intTemp; // wenn es 0 ist, schreib das Ergebnis in W Register
         }
         cout << "Datamemory[RP0][intReg]: "<< Datamemory[RP0][intReg] <<endl;
-        Datamemory[0][2]++;
+
         break;
     case 0x1000 ... 0x13ff:
         cout << "BCF" << endl;
@@ -678,7 +680,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             Datamemory[RP0][intReg] = intBit;  // Wenn RP0 =  0 ist, dann ändere den Wert auf der Bank 0
             cout << "DatamemoryB0: " << Datamemory[RP0][intReg] << endl;
         }
-        Datamemory[0][2]++;
+
         break;
     case 0x1400 ... 0x17ff:
         cout << "BSF" << endl;
@@ -687,7 +689,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intBit = intBit >> 7;
         intTemp = 1 << intBit;
         Datamemory[RP0][intReg] = Datamemory[RP0][intReg] | intTemp;
-        Datamemory[0][2]++;
+
         break;
     case 0x1800 ... 0x1Bff:
         cout << "BTFSC" << endl;
@@ -697,7 +699,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intTemp = 1 << intBit;
         intTemp = (Datamemory[RP0][intReg] & intTemp) >> intBit;
         if(intTemp == 0){Datamemory[0][2]++;RunTime++;}
-        Datamemory[0][2]++;
+
         break;
     case 0x1C00 ... 0x1Fff:
         cout << "BTFSS" << endl;
@@ -707,7 +709,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intTemp = 1 << intBit;
         intTemp = (Datamemory[RP0][intReg] & intTemp) >> intBit;
         if(intTemp == 1){Datamemory[0][2]++;RunTime++;}
-        Datamemory[0][2]++;
+
         break;
     case 0x2000 ... 0x27ff:
         cout << "CALL" << endl;
@@ -716,6 +718,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         PCL = pCommand & 0x07ff;
         PCL = PCLATH | PCL;
         Datamemory[0][2] = pCommand & 0x07ff;
+        Datamemory[0][2]--;
         RunTime++;
 
         break;
@@ -727,6 +730,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         PCL = pCommand & 0x07ff;
         PCL = PCLATH | PCL;
         Datamemory[0][2] =  pCommand & 0x07ff;
+        Datamemory[0][2]--;
         RunTime++;
 
         break;
@@ -736,14 +740,14 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intTemp = pCommand & 0x01ff;
         cout << "intTemp: " << intTemp << endl;
         W = add(intTemp, valueW);
-        Datamemory[0][2]++;
+
         break;
     case 0x3900 ... 0x39ff:
         cout << "ANDLW" << endl;
         intTemp = pCommand & 0x00ff;
         cout << "W vorher: " << W << endl;
         W = intTemp & valueW;                 //the contents of W are bitwiseAND'ed with the literal intTemp
-        Datamemory[0][2]++;
+
         break;
     case 0x3800 ... 0x38ff:
         cout << "IORLW" << endl;
@@ -751,13 +755,13 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "W vorher: " << W << endl;
         W = intTemp | valueW;
         cout << "W: " << W << endl;                    //should not have influence on the Z-Flag
-        Datamemory[0][2]++;
+
         break;
     case 0x3000 ... 0x30ff:
         cout << "MOVLW" << endl;
         intTemp = pCommand & 0x00ff;
         W = intTemp;
-        Datamemory[0][2]++;
+
         break;
     case 0x3C00 ... 0x3Cff:
         cout << "SUBLW" << endl;
@@ -766,16 +770,17 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         W = add(intTemp,valueW);
         cout << "W: " << W << endl;
 
-        if (W <= 0){carry = 0;zero = 0;}
+        if (W < 0){carry = 0;zero = 0;}
         if (W == 0)zero = 1;
         if (W > 0){carry = 1; zero = 0;}
-        Datamemory[0][2]++;
+
         break;
     case 0x3400 ... 0x37ff:
         cout << "RETLW" << endl;
         intTemp = pCommand & 0x00ff;
         W = intTemp;
         Datamemory[0][2] = IPTemp;
+        Datamemory[0][2]--;
         RunTime++;
         cout<< "IPTEMP: " << IPTemp << endl;
 
@@ -786,10 +791,11 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         cout << "W vorher: " << W << endl;
         W = intTemp ^ valueW;
         cout << "W: " << W << endl;
-        Datamemory[0][2]++;
+
         break;
     }
 
+    Datamemory[0][2]++;
 
 
     cout << "W: " << W << endl;
