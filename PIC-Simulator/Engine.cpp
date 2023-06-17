@@ -228,7 +228,7 @@ void Engine::RegisterHandlerAfter(int intReg)
 
     TimerHandler();
     RunTime++;
-
+    emit valueChanged(Datamemory[0][6]);
 }
 
 int Engine::CheckForInterrupt()
@@ -274,6 +274,10 @@ int Engine::Interrupt()
 }
 
 Engine::Engine() // Engine constructor
+{
+    initializeEngine();
+}
+void Engine::initializeEngine()
 {
     //initialize programmemory
     for(int i = 0; i < 1024; i++)
@@ -398,8 +402,8 @@ Engine::~Engine()                   //Engine destructor
 void Engine::controlCommand()                   //set current command with help of programmemory and instruction pointer
 {
     int currentcommand;
-    currentcommand = programmemory[Datamemory[0][2]];
     IP = Datamemory[0][2];
+    currentcommand = programmemory[Datamemory[0][2]];
     executeCommand(currentcommand);
 }
 
@@ -412,7 +416,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
 
 
 
-    Datamemory[0][2]++;
+
 
     RegisterHandlerBefore();
     cout << "Timer: " << Datamemory[0][1]<< endl;
@@ -440,11 +444,17 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         Datamemory[RP0][11] = Datamemory[0][11] | (1 << 7);
         Datamemory[RP0][11] = Datamemory[1][11] | (1 << 7);
         Datamemory[0][2] = IPTemp;
+        Datamemory[0][2]--;
+
         RunTime++;
+
+
         break;
     case 0x0008:
         cout << "RETURN" << endl;
         Datamemory[0][2] = IPTemp;
+
+        Datamemory[0][2]--;
         RunTime++;
         break;
     case 0x0063:
@@ -792,22 +802,24 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         break;
     case 0x2000 ... 0x27ff:
         cout << "CALL" << endl;
-        IPTemp = Datamemory[0][2] + 1;
+        IPTemp = Datamemory[0][2]+1;
         PCLATH = Datamemory[RP0][10] << 11;
         PCL = pCommand & 0x07ff;
         PCL = PCLATH | PCL;
         Datamemory[0][2] = pCommand & 0x07ff;
+        Datamemory[0][2]--;
         RunTime++;
 
         break;
     case 0x2800 ... 0x2Fff:
         cout << "GOTO" << endl;
         intReg = pCommand & 0x07ff;
-        //IPTemp = IP + 1;
+
         PCLATH = Datamemory[RP0][10] << 11;
         PCL = pCommand & 0x07ff;
         PCL = PCLATH | PCL;
         Datamemory[0][2] =  pCommand & 0x07ff;
+        Datamemory[0][2]--;
         RunTime++;
 
         break;
@@ -853,6 +865,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         intTemp = pCommand & 0x00ff;
         W = intTemp;
         Datamemory[0][2] = IPTemp;
+        Datamemory[0][2]--;
         RunTime++;
         cout<< "IPTEMP: " << IPTemp << endl;
 
@@ -884,6 +897,9 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     RegisterHandlerAfter(intReg);
 
     CheckForInterrupt();
+
+
+    Datamemory[0][2]++;
     /*
     if(programmemory[IP] != 0)
     {
