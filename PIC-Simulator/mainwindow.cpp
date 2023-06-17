@@ -58,7 +58,24 @@ MainWindow::MainWindow(QWidget *parent)
     //set connection for breakpoints
     connect(ui->displayfile, &QTextBrowser::cursorPositionChanged, this, &MainWindow::handleCursorPositionChanged);
     //set connection for toggle function for RB changes
-    connect(ui->tableWidget_2, &QTableWidget::cellClicked, this, &MainWindow::toggleValue);
+    connect(ui->pin_table, &QTableWidget::itemClicked, this, [=](QTableWidgetItem* item) {
+        int row = item->row();
+        int column = item->column();
+        toggleValue(row, column, 1);
+    });
+
+    connect(ui->status_register, &QTableWidget::itemClicked, this, [=](QTableWidgetItem* item) {
+        int row = item->row();
+        int column = item->column();
+        toggleValue(row, column, 2);
+    });
+
+    connect(ui->option_register, &QTableWidget::itemClicked, this, [=](QTableWidgetItem* item) {
+        int row = item->row();
+        int column = item->column();
+        toggleValue(row, column, 3);
+    });
+
 
     connect(this, &MainWindow::resetEngine, this, [this]() {
         engine->initializeEngine();
@@ -66,6 +83,8 @@ MainWindow::MainWindow(QWidget *parent)
         setDefaultValues();
         setDefaultValues2();
         syncArrayToTable();
+        syncRegisters();
+        syncSpecials();
         clearMarkedLine();
         updateCurrentIndex(engine->IP);
 
@@ -78,17 +97,29 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
+    timer = new QTimer(this);
+
     //set Validator for Datamemory (only hex values)
-    HexDelegate *hexDelegate = new HexDelegate(ui->tableWidget);
-    ui->tableWidget->setItemDelegate(hexDelegate);
+    HexDelegate *hexDelegate = new HexDelegate(ui->memory_table);
+    ui->memory_table->setItemDelegate(hexDelegate);
     //set Validator for second tableWidget (only 0 or 1)
     QRegularExpressionValidator* validator = new QRegularExpressionValidator(QRegularExpression("[01]"), this);
-    ui->tableWidget_2->setItemDelegate(new QItemDelegate(this));
+    ui->pin_table->setItemDelegate(new QItemDelegate(this));
 
-    //initialize Datamemory tablewidget
+    //initialize Datamemory memory_table
     setDefaultValues();
     //initialize RB Pins
     setDefaultValues2();
+
+    for (int column = 0; column < ui->status_register->columnCount(); ++column) {
+        QTableWidgetItem* item = new QTableWidgetItem("0");
+        ui->status_register->setItem(0, column, item);
+    }
+
+    for (int column = 0; column < ui->option_register->columnCount(); ++column) {
+        QTableWidgetItem* item = new QTableWidgetItem("0");
+        ui->option_register->setItem(0, column, item);
+    }
 
 
 }
@@ -96,15 +127,15 @@ MainWindow::MainWindow(QWidget *parent)
 // initialize Datamemory with 00 in all cells
 void MainWindow::setDefaultValues()
 {
-    int rowCount = ui->tableWidget->rowCount();
-    int columnCount = ui->tableWidget->columnCount();
+    int rowCount = ui->memory_table->rowCount();
+    int columnCount = ui->memory_table->columnCount();
 
     for (int row = 0; row < rowCount; ++row)
     {
         for (int column = 0; column < columnCount; ++column)
         {
             QTableWidgetItem* item = new QTableWidgetItem("00");
-            ui->tableWidget->setItem(row, column, item);
+            ui->memory_table->setItem(row, column, item);
         }
     }
 
@@ -114,9 +145,9 @@ void MainWindow::setDefaultValues2()
 {
 
     // set all cells to 0
-    for (int row = 0; row < ui->tableWidget_2->rowCount(); ++row)
+    for (int row = 0; row < ui->pin_table->rowCount(); ++row)
     {
-        for (int col = 0; col < ui->tableWidget_2->columnCount(); ++col)
+        for (int col = 0; col < ui->pin_table->columnCount(); ++col)
         {
             QTableWidgetItem* item = new QTableWidgetItem("0");
 
@@ -124,202 +155,213 @@ void MainWindow::setDefaultValues2()
             if (!(row == 2 || row == 5 || row == 8 || row == 11 || row == 14))
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable); // set not editable
 
-            ui->tableWidget_2->setItem(row, col, item);
+            ui->pin_table->setItem(row, col, item);
         }
     }
 
     // set i's in certain rows
-    for (int col = 0; col < ui->tableWidget_2->columnCount(); ++col)
+    for (int col = 0; col < ui->pin_table->columnCount(); ++col)
     {
         QTableWidgetItem* item = new QTableWidgetItem("i");
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-        ui->tableWidget_2->setItem(1, col, item);
+        ui->pin_table->setItem(1, col, item);
         item = new QTableWidgetItem("i");
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-        ui->tableWidget_2->setItem(4, col, item);
+        ui->pin_table->setItem(4, col, item);
     }
     // set o's in certain rows
-    for (int col = 0; col < ui->tableWidget_2->columnCount(); ++col)
+    for (int col = 0; col < ui->pin_table->columnCount(); ++col)
     {
         QTableWidgetItem* item = new QTableWidgetItem("o");
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-        ui->tableWidget_2->setItem(7, col, item);
+        ui->pin_table->setItem(7, col, item);
         item = new QTableWidgetItem("o");
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-        ui->tableWidget_2->setItem(10, col, item);
+        ui->pin_table->setItem(10, col, item);
         item = new QTableWidgetItem("o");
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-        ui->tableWidget_2->setItem(13, col, item);
+        ui->pin_table->setItem(13, col, item);
 
     }
 
     QTableWidgetItem* item = new QTableWidgetItem("7");
     // set not editable
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 0, item);
+    ui->pin_table->setItem(0, 0, item);
 
     item = new QTableWidgetItem("7");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 0, item);
+    ui->pin_table->setItem(3, 0, item);
 
     item = new QTableWidgetItem("7");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 0, item);
+    ui->pin_table->setItem(6, 0, item);
 
     item = new QTableWidgetItem("7");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 0, item);
+    ui->pin_table->setItem(9, 0, item);
 
     item = new QTableWidgetItem("7");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 0, item);
+    ui->pin_table->setItem(12, 0, item);
 
     item = new QTableWidgetItem("6");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 1, item);
+    ui->pin_table->setItem(0, 1, item);
 
     item = new QTableWidgetItem("6");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 1, item);
+    ui->pin_table->setItem(3, 1, item);
 
     item = new QTableWidgetItem("6");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 1, item);
+    ui->pin_table->setItem(6, 1, item);
 
     item = new QTableWidgetItem("6");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 1, item);
+    ui->pin_table->setItem(9, 1, item);
 
     item = new QTableWidgetItem("6");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 1, item);
+    ui->pin_table->setItem(12, 1, item);
 
     item = new QTableWidgetItem("5");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 2, item);
+    ui->pin_table->setItem(0, 2, item);
 
     item = new QTableWidgetItem("5");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 2, item);
+    ui->pin_table->setItem(3, 2, item);
 
     item = new QTableWidgetItem("5");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 2, item);
+    ui->pin_table->setItem(6, 2, item);
 
     item = new QTableWidgetItem("5");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 2, item);
+    ui->pin_table->setItem(9, 2, item);
 
     item = new QTableWidgetItem("5");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 2, item);
+    ui->pin_table->setItem(12, 2, item);
 
     item = new QTableWidgetItem("4");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 3, item);
+    ui->pin_table->setItem(0, 3, item);
 
     item = new QTableWidgetItem("4");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 3, item);
+    ui->pin_table->setItem(3, 3, item);
 
     item = new QTableWidgetItem("4");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 3, item);
+    ui->pin_table->setItem(6, 3, item);
 
     item = new QTableWidgetItem("4");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 3, item);
+    ui->pin_table->setItem(9, 3, item);
 
     item = new QTableWidgetItem("4");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 3, item);
+    ui->pin_table->setItem(12, 3, item);
 
     item = new QTableWidgetItem("3");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 4, item);
+    ui->pin_table->setItem(0, 4, item);
 
     item = new QTableWidgetItem("3");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 4, item);
+    ui->pin_table->setItem(3, 4, item);
 
     item = new QTableWidgetItem("3");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 4, item);
+    ui->pin_table->setItem(6, 4, item);
 
     item = new QTableWidgetItem("3");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 4, item);
+    ui->pin_table->setItem(9, 4, item);
 
     item = new QTableWidgetItem("3");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 4, item);
+    ui->pin_table->setItem(12, 4, item);
 
     item = new QTableWidgetItem("2");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 5, item);
+    ui->pin_table->setItem(0, 5, item);
 
     item = new QTableWidgetItem("2");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 5, item);
+    ui->pin_table->setItem(3, 5, item);
 
     item = new QTableWidgetItem("2");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 5, item);
+    ui->pin_table->setItem(6, 5, item);
 
     item = new QTableWidgetItem("2");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 5, item);
+    ui->pin_table->setItem(9, 5, item);
 
     item = new QTableWidgetItem("2");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 5, item);
+    ui->pin_table->setItem(12, 5, item);
 
     item = new QTableWidgetItem("1");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 6, item);
+    ui->pin_table->setItem(0, 6, item);
 
     item = new QTableWidgetItem("1");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 6, item);
+    ui->pin_table->setItem(3, 6, item);
 
     item = new QTableWidgetItem("1");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 6, item);
+    ui->pin_table->setItem(6, 6, item);
 
     item = new QTableWidgetItem("1");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 6, item);
+    ui->pin_table->setItem(9, 6, item);
 
     item = new QTableWidgetItem("1");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 6, item);
+    ui->pin_table->setItem(12, 6, item);
 
     item = new QTableWidgetItem("0");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(0, 7, item);
+    ui->pin_table->setItem(0, 7, item);
 
     item = new QTableWidgetItem("0");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(3, 7, item);
+    ui->pin_table->setItem(3, 7, item);
 
     item = new QTableWidgetItem("0");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(6, 7, item);
+    ui->pin_table->setItem(6, 7, item);
 
     item = new QTableWidgetItem("0");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(9, 7, item);
+    ui->pin_table->setItem(9, 7, item);
 
     item = new QTableWidgetItem("0");
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    ui->tableWidget_2->setItem(12, 7, item);
+    ui->pin_table->setItem(12, 7, item);
 
 }
 
-void MainWindow::toggleValue(int pRow, int pColumn)
+void MainWindow::toggleValue(int pRow, int pColumn, int pTable)
 {
     // check if cell is editable
-    QTableWidgetItem* item = ui->tableWidget_2->item(pRow, pColumn);
+    QTableWidgetItem* item = nullptr;
+    if(pTable == 1)
+    {
+        item = ui->pin_table->item(pRow, pColumn);
+    } else if(pTable == 2)
+    {
+        item = ui->status_register->item(pRow, pColumn);
+    } else if(pTable == 3)
+    {
+        item = ui->option_register->item(pRow, pColumn);
+    }
+
     if (!item || !(item->flags() & Qt::ItemIsEditable))
         return;
 
@@ -332,18 +374,20 @@ void MainWindow::toggleValue(int pRow, int pColumn)
     else
         item->setText("0");
 
-    // if RB cells are edited calculate new value
-    if(pRow == 5)
+    if(pTable == 1)
     {
-        int newValue = 0;
-        for(int c = 0; c <= 7; c++)
+        // if RB cells are edited calculate new value
+        if(pRow == 5)
         {
-            QTableWidgetItem* item = ui->tableWidget_2->item(pRow, c);
-            currentValue = item->text();
-            if(currentValue == "1")
+            int newValue = 0;
+            for(int c = 0; c <= 7; c++)
             {
-                switch(c)
+                QTableWidgetItem* rbItem = ui->pin_table->item(pRow, c);
+                currentValue = rbItem->text();
+                if(currentValue == "1")
                 {
+                    switch(c)
+                    {
                     case 0: newValue = newValue + 128; break;
                     case 1: newValue = newValue + 64; break;
                     case 2: newValue = newValue + 32; break;
@@ -352,13 +396,69 @@ void MainWindow::toggleValue(int pRow, int pColumn)
                     case 5: newValue = newValue + 4; break;
                     case 6: newValue = newValue + 2; break;
                     case 7: newValue = newValue + 1; break;
+                    }
+                }
+            }
+            engine->Datamemory[0][6] = newValue; // set new Value
+            syncArrayToTable(); // update Table for Datamemory
+            //syncRegisters();
+        }
+    } else if(pTable == 2)
+    {
+        int newValue = 0;
+        for(int c = 0; c <= 7; c++)
+        {
+            QTableWidgetItem* statusitem = ui->status_register->item(0, c);
+            currentValue = statusitem->text();
+            if(currentValue == "1")
+            {
+                switch(c)
+                {
+                case 0: newValue = newValue + 128; break;
+                case 1: newValue = newValue + 64; break;
+                case 2: newValue = newValue + 32; break;
+                case 3: newValue = newValue + 16; break;
+                case 4: newValue = newValue + 8; break;
+                case 5: newValue = newValue + 4; break;
+                case 6: newValue = newValue + 2; break;
+                case 7: newValue = newValue + 1; break;
                 }
             }
         }
-        engine->Datamemory[0][6] = newValue; // set new Value
+        engine->Datamemory[0][3] = newValue; // set new Value
         syncArrayToTable(); // update Table for Datamemory
+        //syncRegisters();
+        ui->status_register_label->setText("Status: " + QString::number(newValue));
+
+    } else if(pTable == 3)
+    {
+        int newValue = 0;
+        for(int c = 0; c <= 7; c++)
+        {
+            QTableWidgetItem* statusitem = ui->option_register->item(0, c);
+            currentValue = statusitem->text();
+            if(currentValue == "1")
+            {
+                switch(c)
+                {
+                case 0: newValue = newValue + 128; break;
+                case 1: newValue = newValue + 64; break;
+                case 2: newValue = newValue + 32; break;
+                case 3: newValue = newValue + 16; break;
+                case 4: newValue = newValue + 8; break;
+                case 5: newValue = newValue + 4; break;
+                case 6: newValue = newValue + 2; break;
+                case 7: newValue = newValue + 1; break;
+                }
+            }
+        }
+        engine->Datamemory[1][1] = newValue; // set new Value
+        syncArrayToTable(); // update Table for Datamemory
+        //syncRegisters();
+        ui->option_register_label->setText("Option: " + QString::number(newValue));
     }
 }
+
 
 // if any value in Datamemory changes, signal "valuechanged" can be emitted in Engine
 void MainWindow::syncArrayToTable()
@@ -367,7 +467,7 @@ void MainWindow::syncArrayToTable()
     for (int row = 0; row < 16; ++row) {
         for (int col = 0; col < 8; ++col) {
             QTableWidgetItem* item = new QTableWidgetItem(QString::number(engine->Datamemory[0][row * 8 + col], 16).rightJustified(2, '0')); //convert to hex
-            ui->tableWidget->setItem(row, col, item);
+            ui->memory_table->setItem(row, col, item);
         }
     }
 
@@ -375,9 +475,48 @@ void MainWindow::syncArrayToTable()
     for (int row = 16; row < 32; ++row) {
         for (int col = 0; col < 8; ++col) {
             QTableWidgetItem* item = new QTableWidgetItem(QString::number(engine->Datamemory[1][(row - 16) * 8 + col], 16).rightJustified(2, '0'));
-            ui->tableWidget->setItem(row, col, item);
+            ui->memory_table->setItem(row, col, item);
         }
     }
+}
+
+void MainWindow::syncRegisters()
+{
+
+    for (int col = 0; col < 8; ++col) {
+        int bitmask = 1 << col;
+        int value = engine->Datamemory[0][3];
+        if((value & bitmask) != 0)
+        {
+            QTableWidgetItem* item = new QTableWidgetItem("1"); //convert to hex
+            ui->status_register->setItem(0, col, item);
+        } else {
+            QTableWidgetItem* item = new QTableWidgetItem("0"); //convert to hex
+            ui->status_register->setItem(0, col, item);
+        }
+    }
+
+    for (int col = 0; col < 8; ++col) {
+        int bitmask = 1 << col;
+        int value = engine->Datamemory[1][1];
+        if((value & bitmask) != 0)
+        {
+            QTableWidgetItem* item = new QTableWidgetItem("1"); //convert to hex
+            ui->option_register->setItem(0, col, item);
+        } else {
+            QTableWidgetItem* item = new QTableWidgetItem("0"); //convert to hex
+            ui->option_register->setItem(0, col, item);
+        }
+    }
+}
+
+void MainWindow::syncSpecials()
+{
+    ui->w_register_label->setText("W-Reg: " + QString::number(engine->W));
+    ui->ip_label->setText("IP: " + QString::number(engine->IP));
+    ui->pcl_label->setText("PCL: " + QString::number(engine->PCL));
+    ui->pclath_label->setText("PCLATH: " + QString::number(engine->PCLATH));
+    ui->fsr_label->setText("FSR: " + QString::number(engine->FSR));
 }
 
 MainWindow::~MainWindow()
@@ -391,7 +530,11 @@ void MainWindow::getEngine(Engine* pEngine)
     engine = pEngine;
     updateCurrentIndex(engine->IP);
     connect(engine, &Engine::valueChanged, this, &MainWindow::syncArrayToTable);
+    connect(engine, &Engine::valueChanged, this, &MainWindow::syncRegisters);
+    connect(engine, &Engine::valueChanged, this, &MainWindow::syncSpecials);
     syncArrayToTable();
+    syncRegisters();
+    syncSpecials();
 }
 // if button open file is pressed
 void MainWindow::on_open_file_triggered()
@@ -423,32 +566,36 @@ void MainWindow::on_open_file_triggered()
 // if start button is pressed
 void MainWindow::on_start_button_clicked()
 {
+    // Überprüfen, ob der Timer bereits läuft
+    if (timer && timer->isActive()) {
+        // Timer stoppen
+        timer->stop();
+        return;
+    }
 
     ui->time_for_command_label->setText(QString::number(((float)4 / (float)ui->quarzfrequenz_spinBox->value()), 'f', 2));
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this, timer]() {
-        // quarzfrequenz
-        runtime = ui->time_for_command_label->text().toDouble() * engine->RunTime;
-        ui->runtime_label->setText(QString::number(runtime));
-        ui->step_in_button->click();
 
-        int lineNumber = findLineNumber(ui->displayfile, QString::fromStdString(currentIndex));
-        std::cout << "linenumber: " << lineNumber << "currentIndex: " << currentIndex << std::endl;
-        if (hasBreakpoint(lineNumber)) {
-            timer->stop();
-            timer->deleteLater();
+    // Erstellen des Timers, falls er noch nicht vorhanden ist
+    if (timer) {
+        timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, [this]() {
+            // quarzfrequenz
+            runtime = ui->time_for_command_label->text().toDouble() * engine->RunTime;
+            ui->runtime_label->setText(QString::number(runtime));
+            ui->step_in_button->click();
 
-        }
+            int lineNumber = findLineNumber(ui->displayfile, QString::fromStdString(currentIndex));
+            std::cout << "linenumber: " << lineNumber << "currentIndex: " << currentIndex << std::endl;
+            if (hasBreakpoint(lineNumber)) {
+                timer->stop();
+            }
+        });
+    }
 
-        if (engine->programmemory[engine->IP + 1] == 0 && engine->programmemory[engine->IP + 2] == 0) {
-            timer->stop();
-            timer->deleteLater();
-        }
-    });
-
+    // Timer starten
     timer->start(500);
-
 }
+
 
 int MainWindow::findLineNumber(QTextBrowser* textBrowser, const QString& searchText)
 {
@@ -614,13 +761,15 @@ void MainWindow::on_step_in_button_clicked()
 
 void MainWindow::on_step_out_button_clicked()
 {
-    //
+    ui->start_button->click();
 }
 
 
 void MainWindow::on_reset_button_clicked()
 {
+    timer->stop();
     engine->IP = 0;
+    ui->reset_runtime_button->click();
     emit resetEngine();
 
 }
@@ -632,4 +781,3 @@ void MainWindow::on_reset_runtime_button_clicked()
     runtime = 0.00;
     engine->RunTime = 0;
 }
-

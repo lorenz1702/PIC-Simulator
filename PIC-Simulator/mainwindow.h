@@ -67,13 +67,16 @@ private:
     Engine *engine;         // engine
     double runtime;
     int lineoffset;
+    QTimer* timer;
 
     void updateCurrentIndex(int pIP);
     void setDefaultValues();
     void setDefaultValues2();
-    void toggleValue(int pRow, int pColumn);
+    void toggleValue(int pRow, int pColumn, int pTable);
     void updateTableFromMemory();
     void syncArrayToTable();
+    void syncRegisters();
+    void syncSpecials();
     int findLineNumber(QTextBrowser* textBrowser, const QString& searchText);
 
 };
