@@ -39,7 +39,7 @@ public:
 
 
 signals:
-    void valueChanged(int newValue);
+    void valueChanged();
 
 } ;
 

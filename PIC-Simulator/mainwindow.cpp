@@ -154,7 +154,6 @@ void MainWindow::setDefaultValues()
 // initialize RB Pins
 void MainWindow::setDefaultValues2()
 {
-
     // set all cells to 0
     for (int row = 0; row < ui->pin_table->rowCount(); ++row)
     {
@@ -166,9 +165,16 @@ void MainWindow::setDefaultValues2()
             if (!(row == 2 || row == 5 || row == 8 || row == 11 || row == 14))
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable); // set not editable
 
+            if(row == 2 && col >= 0 && col <= 2)
+            {
+                item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+            }
+
             ui->pin_table->setItem(row, col, item);
         }
     }
+
+
 
     // set i's in certain rows
     for (int col = 0; col < ui->pin_table->columnCount(); ++col)
@@ -414,6 +420,31 @@ void MainWindow::toggleValue(int pRow, int pColumn, int pTable)
                 }
             }
             engine->Datamemory[0][6] = newValue; // set new Value
+            syncArrayToTable(); // update Table for Datamemory
+            syncRegisters();
+        } else if(pRow == 2)
+        {
+            int newValue = 0;
+            for(int c = 0; c <= 7; c++)
+            {
+                QTableWidgetItem* raItem = ui->pin_table->item(pRow, c);
+                currentValue = raItem->text();
+                if(currentValue == "1")
+                {
+                    switch(c)
+                    {
+                    case 0: newValue = newValue + 128; break;
+                    case 1: newValue = newValue + 64; break;
+                    case 2: newValue = newValue + 32; break;
+                    case 3: newValue = newValue + 16; break;
+                    case 4: newValue = newValue + 8; break;
+                    case 5: newValue = newValue + 4; break;
+                    case 6: newValue = newValue + 2; break;
+                    case 7: newValue = newValue + 1; break;
+                    }
+                }
+            }
+            engine->Datamemory[0][5] = newValue; // set new Value
             syncArrayToTable(); // update Table for Datamemory
             syncRegisters();
         }

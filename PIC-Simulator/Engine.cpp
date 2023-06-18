@@ -218,7 +218,7 @@ void Engine::RegisterHandlerAfter(int intReg)
     if(statusTemp1 != Datamemory[0][3] || statusTemp2 != Datamemory[1][3]){//
         RP0 = (Datamemory[RP0][3] >> 5) & 0x01;
         static int negRP0;
-         if(RP0 == 0){
+        if(RP0 == 0){
             negRP0 = 1;
             int mask = ~(1 << 5);
             Datamemory[negRP0][3] = Datamemory[negRP0][3] & mask;
@@ -245,7 +245,7 @@ void Engine::RegisterHandlerAfter(int intReg)
 
     TimerHandler();
     RunTime++;
-    emit valueChanged(Datamemory[0][6]);
+    emit valueChanged();
 }
 
 int Engine::CheckForInterrupt()
@@ -439,7 +439,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     RegisterHandlerBefore();
     cout << "Timer: " << Datamemory[0][1]<< endl;
     //Sleep(50);
-              //valueW stores value in W register
+    //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
     {
@@ -637,7 +637,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
             intTemp = Datamemory[RP0][intReg] | valueW; // schreibs in das Register der aktuellen Bank
-            zero = (intTemp == 0) ? 1 :0;           
+            zero = (intTemp == 0) ? 1 :0;
             Datamemory[RP0][intReg] = intTemp;
         } else
         {
@@ -736,7 +736,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intTemp = (~valueW + 1) & 0xFF;
             cout << "Wert2 " << Datamemory[RP0][intReg] << endl;
             unsigned int complement = (Datamemory[RP0][intReg] + intTemp) & 0xFF; // schreibs in das Register der aktuellen Bank
-            carry = (complement >= 0) ? 1 : 0;           
+            carry = (complement >= 0) ? 1 : 0;
             if(complement == 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4; Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1;}
             W = complement; // wenn es 0 ist, schreib das Ergebnis in W Register
             zero = (complement == 0) ? 1 :0;
