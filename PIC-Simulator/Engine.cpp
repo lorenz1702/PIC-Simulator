@@ -179,11 +179,12 @@ void Engine::TimerHandler(){
 
     }
     if(WDT == 255){
-        WDT =0;
+        WDT = 0;
         Datamemory[RP0][3] = Datamemory[RP0][3] & ~(1 << 4);
 
     }
     if(Datamemory[0][1] == 255){Datamemory[0][1]=0; Datamemory[RP0][11] = Datamemory[RP0][11] | (1 << 2);}
+
 }
 
 void Engine::RegisterHandlerAfter(int intReg)
@@ -228,7 +229,7 @@ void Engine::RegisterHandlerAfter(int intReg)
 
     TimerHandler();
     RunTime++;
-    emit valueChanged(Datamemory[0][6]);
+    emit valueChanged();
 }
 
 int Engine::CheckForInterrupt()
@@ -310,7 +311,8 @@ void Engine::initializeEngine()
     PCLATH = 10;
     INTCON = 11;
 
-
+    WDT = 0;
+    WDTE = 0;
 
 
     RP0 = 0;
@@ -322,6 +324,7 @@ void Engine::initializeEngine()
     Dcarry = 0;
 
     RB0 = (Datamemory[0][6] & 0x01);
+
 }
 
 Engine::~Engine()                   //Engine destructor
