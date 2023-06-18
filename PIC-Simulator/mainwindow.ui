@@ -1250,8 +1250,8 @@
    <widget class="QLabel" name="w_register_label">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>560</y>
+      <x>720</x>
+      <y>640</y>
       <width>71</width>
       <height>25</height>
      </rect>
@@ -1295,8 +1295,8 @@
    <widget class="QLabel" name="ip_label">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>560</y>
+      <x>800</x>
+      <y>640</y>
       <width>71</width>
       <height>25</height>
      </rect>
@@ -1340,8 +1340,8 @@
    <widget class="QLabel" name="pcl_label">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>600</y>
+      <x>720</x>
+      <y>680</y>
       <width>71</width>
       <height>25</height>
      </rect>
@@ -1385,8 +1385,8 @@
    <widget class="QLabel" name="pclath_label">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>600</y>
+      <x>800</x>
+      <y>680</y>
       <width>71</width>
       <height>25</height>
      </rect>
@@ -1430,8 +1430,8 @@
    <widget class="QLabel" name="fsr_label">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>600</y>
+      <x>880</x>
+      <y>680</y>
       <width>71</width>
       <height>25</height>
      </rect>
@@ -1515,6 +1515,120 @@
     </property>
     <property name="text">
      <string>WDT: </string>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="intcon_register">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>560</y>
+      <width>321</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>15</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>39</number>
+    </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>25</number>
+    </attribute>
+    <row>
+     <property name="text">
+      <string/>
+     </property>
+    </row>
+    <column>
+     <property name="text">
+      <string>GIE</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>PIE</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>T0IE</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>INTE</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>RBIE</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>T0IF</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>INTF</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>RBIF</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="intcon_register_label">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>530</y>
+      <width>81</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled/>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>INTCON: 0</string>
     </property>
    </widget>
   </widget>

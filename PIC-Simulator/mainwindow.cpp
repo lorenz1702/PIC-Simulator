@@ -76,6 +76,12 @@ MainWindow::MainWindow(QWidget *parent)
         toggleValue(row, column, 3);
     });
 
+    connect(ui->intcon_register, &QTableWidget::itemClicked, this, [=](QTableWidgetItem* item) {
+        int row = item->row();
+        int column = item->column();
+        toggleValue(row, column, 4);
+    });
+
 
     connect(this, &MainWindow::resetEngine, this, [this]() {
         engine->initializeEngine();
@@ -119,6 +125,11 @@ MainWindow::MainWindow(QWidget *parent)
     for (int column = 0; column < ui->option_register->columnCount(); ++column) {
         QTableWidgetItem* item = new QTableWidgetItem("0");
         ui->option_register->setItem(0, column, item);
+    }
+
+    for (int column = 0; column < ui->intcon_register->columnCount(); ++column) {
+        QTableWidgetItem* item = new QTableWidgetItem("0");
+        ui->intcon_register->setItem(0, column, item);
     }
 
 
@@ -360,6 +371,9 @@ void MainWindow::toggleValue(int pRow, int pColumn, int pTable)
     } else if(pTable == 3)
     {
         item = ui->option_register->item(pRow, pColumn);
+    } else if(pTable == 4)
+    {
+        item = ui->intcon_register->item(pRow, pColumn);
     }
 
     if (!item || !(item->flags() & Qt::ItemIsEditable))
@@ -435,8 +449,8 @@ void MainWindow::toggleValue(int pRow, int pColumn, int pTable)
         int newValue = 0;
         for(int c = 0; c <= 7; c++)
         {
-            QTableWidgetItem* statusitem = ui->option_register->item(0, c);
-            currentValue = statusitem->text();
+            QTableWidgetItem* optionitem = ui->option_register->item(0, c);
+            currentValue = optionitem->text();
             if(currentValue == "1")
             {
                 switch(c)
@@ -456,6 +470,32 @@ void MainWindow::toggleValue(int pRow, int pColumn, int pTable)
         syncArrayToTable(); // update Table for Datamemory
         syncRegisters();
         ui->option_register_label->setText("Option: " + QString::number(newValue));
+    } else if(pTable == 4)
+    {
+        int newValue = 0;
+        for(int c = 0; c <= 7; c++)
+        {
+            QTableWidgetItem* intconitem = ui->intcon_register->item(0, c);
+            currentValue = intconitem->text();
+            if(currentValue == "1")
+            {
+                switch(c)
+                {
+                case 0: newValue = newValue + 128; break;
+                case 1: newValue = newValue + 64; break;
+                case 2: newValue = newValue + 32; break;
+                case 3: newValue = newValue + 16; break;
+                case 4: newValue = newValue + 8; break;
+                case 5: newValue = newValue + 4; break;
+                case 6: newValue = newValue + 2; break;
+                case 7: newValue = newValue + 1; break;
+                }
+            }
+        }
+        engine->Datamemory[1][11] = newValue; // set new Value
+        syncArrayToTable(); // update Table for Datamemory
+        syncRegisters();
+        ui->intcon_register_label->setText("INTCON: " + QString::number(newValue));
     }
 }
 
@@ -508,6 +548,20 @@ void MainWindow::syncRegisters()
             ui->option_register->setItem(0, col, item);
         }
     }
+
+    for (int col = 0; col < 8; ++col) {
+        int bitmask = 1 << (7 - col);
+        int value = engine->Datamemory[1][11];
+        if((value & bitmask) != 0)
+        {
+            QTableWidgetItem* item = new QTableWidgetItem("1");
+            ui->intcon_register->setItem(0, col, item);
+        } else {
+            QTableWidgetItem* item = new QTableWidgetItem("0");
+            ui->intcon_register->setItem(0, col, item);
+        }
+    }
+
 }
 
 void MainWindow::syncSpecials()
@@ -538,6 +592,7 @@ void MainWindow::getEngine(Engine* pEngine)
     connect(engine, &Engine::valueChanged, this, &MainWindow::syncSpecials);
     ui->option_register_label->setText("Option: " + QString::number(engine->Datamemory[1][1]));
     ui->status_register_label->setText("Status: " + QString::number(engine->Datamemory[0][3]));
+    ui->intcon_register_label->setText("INTCON: " + QString::number(engine->Datamemory[1][11]));
     syncArrayToTable();
     syncRegisters();
     syncSpecials();
@@ -582,6 +637,7 @@ void MainWindow::on_start_button_clicked()
     ui->time_for_command_label->setText(QString::number(((float)4 / (float)ui->quarzfrequenz_spinBox->value()), 'f', 2));
     ui->option_register_label->setText("Option: " + QString::number(engine->Datamemory[1][1]));
     ui->status_register_label->setText("Status: " + QString::number(engine->Datamemory[0][3]));
+    ui->intcon_register_label->setText("Status: " + QString::number(engine->Datamemory[1][11]));
 
     // Erstellen des Timers, falls er noch nicht vorhanden ist
     if (timer) {
