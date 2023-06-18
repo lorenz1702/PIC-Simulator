@@ -16,11 +16,9 @@ class Scanner : public QObject               //Ziffernstruktur: 0001 3011  0001-
     Q_OBJECT
 private:
 
-
 public:
     Scanner();
     ~Scanner();
-
     int putcommandsinprogrammemory(Engine &engine, std::string lstpath);
 
 } ;

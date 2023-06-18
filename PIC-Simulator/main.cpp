@@ -17,9 +17,10 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
     Scanner scanner;
     Engine engine;
+    MainWindow w;
+    w.getEngine(&engine);
 
     // connect putcommandsinprogrammemory with signal from mainwindow
     QObject::connect(&w, &MainWindow::fileProcessed, [&scanner, &engine, &w]() {

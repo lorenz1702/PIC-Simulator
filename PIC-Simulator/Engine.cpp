@@ -204,7 +204,7 @@ void Engine::RegisterHandlerAfter(int intReg)
     if(statusTemp1 != (Datamemory[RP0][3])){
         RP0 = (Datamemory[RP0][3] >> 5) & 0x01;
         static int negRP0;
-         if(RP0 == 0){
+        if(RP0 == 0){
             negRP0 = 1;
             int mask = ~(1 << 5);
             Datamemory[negRP0][3] = Datamemory[negRP0][3] & mask;
@@ -421,7 +421,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     RegisterHandlerBefore();
     cout << "Timer: " << Datamemory[0][1]<< endl;
     //Sleep(50);
-              //valueW stores value in W register
+    //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
     {

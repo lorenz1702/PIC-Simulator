@@ -19,8 +19,6 @@ set(PROJECT_SOURCES
         mainwindow.ui
         Scanner.h
         Scanner.cpp
-        DataStorage.cpp
-        DataStorage.h
         Engine.cpp
         Engine.h
 )
