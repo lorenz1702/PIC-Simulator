@@ -59,6 +59,7 @@ private slots:
 
 
     void on_reset_runtime_button_clicked();
+    void on_wdt_checkbox_pressed();
 
 private:
     Ui::MainWindow *ui;
