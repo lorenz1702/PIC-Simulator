@@ -28,10 +28,10 @@ public:
     int Datamemory[2][128];
     int PORTA,PORTB,TRISA,TRISB,FSR,TMR0,OPTION,PCL,STATUS,EEDATA,EEADR,EECON1,EECON2,PCLATH,INTCON;
     int zero, carry, Dcarry;
-    int W;
+    unsigned int W;
     int IP;
     int IPTemp;
-    int RP0, GIE, statusTemp, statusTemp1, T0CS;
+    int RP0, GIE, statusTemp, statusTemp1, statusTemp2, T0CS;
     int RunTime;
     int WDT;
     int WDTE;
@@ -39,7 +39,7 @@ public:
 
 
 signals:
-    void valueChanged();
+    void valueChanged(int newValue);
 
 } ;
 
