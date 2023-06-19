@@ -14,6 +14,7 @@ private:
     void RegisterHandlerBefore();
     void RegisterHandlerAfter(int intReg);
     void TimerHandler();
+    void Prescaler();
     int CheckForInterrupt();
     int Interrupt();
 
@@ -36,6 +37,7 @@ public:
     int WDT;
     int WDTE;
     int RB0;
+    int RA4;
 
 
 signals:
