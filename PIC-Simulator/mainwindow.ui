@@ -23,7 +23,7 @@
    <widget class="QTextBrowser" name="displayfile">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>90</x>
       <y>80</y>
       <width>581</width>
       <height>461</height>
@@ -33,7 +33,7 @@
    <widget class="QPushButton" name="start_button">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>100</x>
       <y>560</y>
       <width>80</width>
       <height>24</height>
@@ -46,7 +46,7 @@
    <widget class="QPushButton" name="step_in_button">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>200</x>
       <y>560</y>
       <width>80</width>
       <height>24</height>
@@ -59,7 +59,7 @@
    <widget class="QPushButton" name="step_out_button">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>200</x>
       <y>600</y>
       <width>80</width>
       <height>24</height>
@@ -72,7 +72,7 @@
    <widget class="QPushButton" name="reset_button">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>100</x>
       <y>600</y>
       <width>80</width>
       <height>24</height>
@@ -85,7 +85,7 @@
    <widget class="QSpinBox" name="quarzfrequenz_spinBox">
     <property name="geometry">
      <rect>
-      <x>370</x>
+      <x>420</x>
       <y>560</y>
       <width>40</width>
       <height>25</height>
@@ -104,7 +104,7 @@
    <widget class="QLabel" name="quarzfrequenz_label">
     <property name="geometry">
      <rect>
-      <x>430</x>
+      <x>480</x>
       <y>560</y>
       <width>131</width>
       <height>25</height>
@@ -152,7 +152,7 @@
    <widget class="QTableWidget" name="memory_table">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>80</y>
       <width>321</width>
       <height>192</height>
@@ -382,7 +382,7 @@
    <widget class="QTableWidget" name="pin_table">
     <property name="geometry">
      <rect>
-      <x>1120</x>
+      <x>1170</x>
       <y>80</y>
       <width>241</width>
       <height>461</height>
@@ -522,7 +522,7 @@
    <widget class="QLabel" name="runtime_text_label">
     <property name="geometry">
      <rect>
-      <x>430</x>
+      <x>480</x>
       <y>600</y>
       <width>81</width>
       <height>25</height>
@@ -567,7 +567,7 @@
    <widget class="QLabel" name="runtime_label">
     <property name="geometry">
      <rect>
-      <x>370</x>
+      <x>420</x>
       <y>600</y>
       <width>40</width>
       <height>25</height>
@@ -674,7 +674,7 @@
    <widget class="QPushButton" name="reset_runtime_button">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>580</x>
       <y>600</y>
       <width>80</width>
       <height>24</height>
@@ -687,7 +687,7 @@
    <widget class="QLabel" name="time_for_command_label">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>330</x>
       <y>560</y>
       <width>40</width>
       <height>25</height>
@@ -770,7 +770,7 @@
    <widget class="QLabel" name="time_command_label">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>320</x>
       <y>580</y>
       <width>65</width>
       <height>25</height>
@@ -810,7 +810,7 @@
    <widget class="QLabel" name="file_label">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>90</x>
       <y>44</y>
       <width>121</width>
       <height>31</height>
@@ -877,7 +877,7 @@
    <widget class="QLabel" name="memory_label">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>44</y>
       <width>121</width>
       <height>31</height>
@@ -926,7 +926,7 @@
    <widget class="QLabel" name="toggle_pins_label">
     <property name="geometry">
      <rect>
-      <x>1120</x>
+      <x>1170</x>
       <y>44</y>
       <width>141</width>
       <height>31</height>
@@ -975,7 +975,7 @@
    <widget class="QLabel" name="special_function_register_label">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>304</y>
       <width>321</width>
       <height>41</height>
@@ -1024,7 +1024,7 @@
    <widget class="QTableWidget" name="status_register">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>380</y>
       <width>321</width>
       <height>51</height>
@@ -1091,7 +1091,7 @@
    <widget class="QLabel" name="status_register_label">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>350</y>
       <width>81</width>
       <height>25</height>
@@ -1136,7 +1136,7 @@
    <widget class="QTableWidget" name="option_register">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>470</y>
       <width>321</width>
       <height>51</height>
@@ -1205,7 +1205,7 @@
    <widget class="QLabel" name="option_register_label">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>440</y>
       <width>81</width>
       <height>25</height>
@@ -1250,7 +1250,7 @@
    <widget class="QLabel" name="w_register_label">
     <property name="geometry">
      <rect>
-      <x>720</x>
+      <x>770</x>
       <y>640</y>
       <width>71</width>
       <height>25</height>
@@ -1295,7 +1295,7 @@
    <widget class="QLabel" name="ip_label">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>850</x>
       <y>640</y>
       <width>71</width>
       <height>25</height>
@@ -1340,7 +1340,7 @@
    <widget class="QLabel" name="pcl_label">
     <property name="geometry">
      <rect>
-      <x>720</x>
+      <x>770</x>
       <y>680</y>
       <width>71</width>
       <height>25</height>
@@ -1385,7 +1385,7 @@
    <widget class="QLabel" name="pclath_label">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>850</x>
       <y>680</y>
       <width>71</width>
       <height>25</height>
@@ -1430,7 +1430,7 @@
    <widget class="QLabel" name="fsr_label">
     <property name="geometry">
      <rect>
-      <x>880</x>
+      <x>930</x>
       <y>680</y>
       <width>71</width>
       <height>25</height>
@@ -1475,7 +1475,7 @@
    <widget class="QCheckBox" name="wdt_checkbox">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>310</x>
       <y>600</y>
       <width>81</width>
       <height>22</height>
@@ -1520,7 +1520,7 @@
    <widget class="QTableWidget" name="intcon_register">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>560</y>
       <width>321</width>
       <height>51</height>
@@ -1589,7 +1589,7 @@
    <widget class="QLabel" name="intcon_register_label">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>760</x>
       <y>530</y>
       <width>81</width>
       <height>25</height>

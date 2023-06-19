@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "qscrollbar.h"
 #include <QFileDialog>
@@ -167,7 +167,7 @@ void MainWindow::setDefaultValues2()
 
             if(row == 2 && col >= 0 && col <= 2)
             {
-                item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+                item->setFlags(item->flags() & ~Qt::ItemIsEditable); // set a register bits 7, 6 and 5 not editable
             }
 
             ui->pin_table->setItem(row, col, item);
@@ -593,12 +593,26 @@ void MainWindow::syncRegisters()
         }
     }
 
+    for (int col = 0; col < 8; ++col) {
+        int bitmask = 1 << (7 - col);
+        int value = engine->Datamemory[engine->RP0][6];
+        if((value & bitmask) != 0)
+        {
+            QTableWidgetItem* item = new QTableWidgetItem("1");
+            ui->pin_table->setItem(5, col, item);
+        } else {
+            QTableWidgetItem* item = new QTableWidgetItem("0");
+            ui->pin_table->setItem(5, col, item);
+        }
+    }
+
 }
 
 void MainWindow::syncSpecials()
 {
     ui->w_register_label->setText("W-Reg: " + QString::number(engine->W));
     ui->ip_label->setText("IP: " + QString::number(engine->IP));
+    ui->iptemp_label->setText("Rücksprungadresse: " + QString::number(engine->IPTemp));
     ui->pcl_label->setText("PCL: " + QString::number(engine->PCL));
     ui->pclath_label->setText("PCLATH: " + QString::number(engine->PCLATH));
     ui->fsr_label->setText("FSR: " + QString::number(engine->FSR));
