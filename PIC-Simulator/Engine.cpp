@@ -31,6 +31,93 @@ void Engine::RegisterHandlerBefore()
     Datamemory[0][0] = Datamemory[RB0][FSR];
 }
 
+void Engine::Prescaler(){
+    //TMR0
+    T0CS = (Datamemory[1][1] >> 4) & 0x01;
+    int PSA = (Datamemory[1][1] >> 3) & 0x01;
+    int PS0 = Datamemory[1][1] & 0x01;
+    int PS1 = (Datamemory[1][1] >> 1) & 0x01;
+    int PS2 = (Datamemory[1][1] >> 2) & 0x01;
+    int T0SE = (Datamemory[1][1] >> 3) & 0x01;
+
+
+
+    if(PSA == 1 && T0CS == 1){
+        Datamemory[0][1]++;
+    }
+
+    if(PSA == 0 && T0CS == 1){
+        if(PS0==0&&PS1==0&&PS2==0){
+            static int count1 = 0;
+            count1++;
+            if (count1 == 2) {
+                Datamemory[0][1]++;
+                count1 = 0;
+            }
+        }
+        if(PS2==0&&PS1==0&&PS0==1){
+            static int count1 = 0;
+            count1++;
+            if (count1 == 4) {
+                Datamemory[0][1]++;
+                count1 = 0;
+            }
+        }
+        if(PS2==0&&PS1==1&&PS0==0){
+            static int count2 = 0;
+            count2++;
+            if (count2 == 8) {
+                Datamemory[0][1]++;
+                count2 = 0;
+            }
+        }
+        if(PS2==0&&PS1==1&&PS0==1){
+            static int count3 = 0;
+            count3++;
+            if (count3 == 16) {
+                Datamemory[0][1]++;
+                count3 = 0;
+            }
+        }
+        if(PS2==1&&PS1==0&&PS0==0){
+            static int count = 0;
+            count++;
+            if (count == 32) {
+                Datamemory[0][1]++;
+                count = 0;
+            }
+        }
+        if(PS2==1&&PS1==0&&PS0==1){
+            static int count = 0;
+            count++;
+            if (count == 64) {
+                Datamemory[0][1]++;
+                count = 0;
+            }
+        }
+        if(PS2==1&&PS1==1&&PS0==0){
+            static int count = 0;
+            count++;
+            if (count == 128) {
+                Datamemory[0][1]++;
+                count = 0;
+            }
+        }
+        if(PS2==1&&PS1==1&&PS0==1){
+            static int count = 0;
+            count++;
+            if (count == 256) {
+                Datamemory[0][1]++;
+                count = 0;
+            }
+        }
+    }
+
+
+    if(Datamemory[0][1] == 255){zero = 1;Datamemory[0][1]=0; Datamemory[RP0][11] = Datamemory[RP0][11] | (1 << 2);}
+}
+
+
 void Engine::TimerHandler(){
     //TMR0
     T0CS = (Datamemory[1][1] >> 4) & 0x01;
@@ -38,6 +125,23 @@ void Engine::TimerHandler(){
     int PS0 = Datamemory[1][1] & 0x01;
     int PS1 = (Datamemory[1][1] >> 1) & 0x01;
     int PS2 = (Datamemory[1][1] >> 2) & 0x01;
+    int T0SE = (Datamemory[1][1] >> 3) & 0x01;
+
+
+    if(T0CS == 1){
+        if(T0SE == 1){
+            if(RA4 == 1 && ((Datamemory[0][PORTA] >> 4) & 0x01)==0){Prescaler();}//INTF muss noch gesetzt werden
+
+        }else{
+            if(RA4 == 0 && ((Datamemory[0][PORTA] >> 4) & 0x01)==1){ Prescaler();}
+        }
+        RA4 =  (Datamemory[0][PORTA] >> 4) & 0x01;
+    }
+
+
+
+
+
 
     if(PSA == 1 && T0CS == 0){
         Datamemory[0][1]++;
@@ -218,11 +322,13 @@ void Engine::RegisterHandlerAfter(int intReg)
     if(statusTemp1 != Datamemory[0][3] || statusTemp2 != Datamemory[1][3]){//
         RP0 = (Datamemory[RP0][3] >> 5) & 0x01;
         static int negRP0;
-        if(RP0 == 0){
+         if(RP0 == 0){
             negRP0 = 1;
             int mask = ~(1 << 5);
             Datamemory[negRP0][3] = Datamemory[negRP0][3] & mask;
-        }else{
+            Datamemory[0][3] = Datamemory[0][3] & mask;
+        }
+        if(RP0 ==1){
             negRP0 = 0;
             int mask = 1 << 5;
             Datamemory[negRP0][3] = Datamemory[negRP0][3]  | mask;
@@ -231,7 +337,7 @@ void Engine::RegisterHandlerAfter(int intReg)
     }
     cout << "RP0: "<< RP0 <<endl;
     if (statusTemp != (Datamemory[RP0][3] & 0x07)){// muss eigentlich aufgeteilt werden
-        carry = Datamemory[RP0][3] & 0x01;
+      carry = Datamemory[RP0][3] & 0x01;
         zero = (Datamemory[RP0][3] >> 2) & 0x01;}
     //INTCON Interrupt GIE
     /*
@@ -340,6 +446,7 @@ void Engine::initializeEngine()
     Dcarry = 0;
 
     RB0 = (Datamemory[0][6] & 0x01);
+    Datamemory[1][6]= 0x00FF;
 }
 
 Engine::~Engine()                   //Engine destructor
@@ -439,7 +546,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
     RegisterHandlerBefore();
     cout << "Timer: " << Datamemory[0][1]<< endl;
     //Sleep(50);
-    //valueW stores value in W register
+              //valueW stores value in W register
     //switch statement with all commands
     switch (pCommand)
     {
@@ -637,7 +744,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             //aktuelle Bank auslagern ! Register mitgeben und Wert! Methode weiß selber, welche Bank gerade die aktuelle ist! + Methode zum ändern der aktuellen Bank
             intTemp = Datamemory[RP0][intReg] | valueW; // schreibs in das Register der aktuellen Bank
-            zero = (intTemp == 0) ? 1 :0;
+            zero = (intTemp == 0) ? 1 :0;           
             Datamemory[RP0][intReg] = intTemp;
         } else
         {
@@ -675,8 +782,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intReg = pCommand & 0x007f;
             intTemp = (Datamemory[RP0][intReg]<<1) | carry; //schreibs in das Register der aktuellen Bank
             carry = (Datamemory[RP0][intReg] & 0x0080) >> 7;
-            Datamemory[0][STATUS] = Datamemory[0][STATUS] | carry;
-            Datamemory[0][STATUS] = Datamemory[0][STATUS] & carry;
+
             cout << "carry bit:" << carry << endl;
             intTemp = intTemp & 0x00ff;
             Datamemory[RP0][intReg] = intTemp;
@@ -736,7 +842,7 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
             intTemp = (~valueW + 1) & 0xFF;
             cout << "Wert2 " << Datamemory[RP0][intReg] << endl;
             unsigned int complement = (Datamemory[RP0][intReg] + intTemp) & 0xFF; // schreibs in das Register der aktuellen Bank
-            carry = (complement >= 0) ? 1 : 0;
+            carry = (complement >= 0) ? 1 : 0;           
             if(complement == 0){Datamemory[0][STATUS] = Datamemory[0][STATUS] | 4; Datamemory[0][STATUS] = Datamemory[0][STATUS] | 1;}
             W = complement; // wenn es 0 ist, schreib das Ergebnis in W Register
             zero = (complement == 0) ? 1 :0;
@@ -817,7 +923,15 @@ void Engine::executeCommand(int pCommand)       //execute Command handles given 
         Datamemory[RP0][intReg] = Datamemory[RP0][intReg] | intTemp;
         cout << "BSF: " << Datamemory[RP0][intReg] << endl;
         cout << "intReg: " << intReg << endl;
-        cout << "intBit: " << intBit << endl;
+
+        if(intReg==3 && intBit == 0){
+            carry = 1;
+            cout << "intBit: " << intBit << endl;
+
+        }
+        if(intReg==3 && intBit == 2){
+            zero = 1;
+        }
         break;
     case 0x1800 ... 0x1Bff:
         cout << "BTFSC" << endl;
